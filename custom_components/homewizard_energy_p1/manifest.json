@@ -1,0 +1,9 @@
+{
+  "domain": "homewizard_energy_p1",
+  "name": "HomeWizard Energy",
+  "documentation": "https://github.com/Unsigus/hass-homewizard-energy",
+  "dependencies": [],
+  "codeowners": ["@unsigned"],
+  "requirements": [],
+  "config_flow": true
+}
