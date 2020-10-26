@@ -1,5 +1,5 @@
 {
-  "domain": "homewizard_energy_p1",
+  "domain": "homewizard_energy",
   "name": "HomeWizard Energy",
   "documentation": "https://github.com/Unsigus/hass-homewizard-energy",
   "dependencies": [],
