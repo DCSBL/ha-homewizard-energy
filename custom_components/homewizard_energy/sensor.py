@@ -49,7 +49,7 @@ class HWEP1MeterSensor(Entity):
 
     def __init__(self, config, hass):
         """Initializes the remote."""
-        _LOGGER.info(f"Started Homewizard Enrgy P1 with IP {config}")
+        _LOGGER.info(f"Started Homewizard Energy with IP {config}")
         self._config = config
         self._hass = hass
 
@@ -86,12 +86,12 @@ class HWEP1MeterSensor(Entity):
 
     @property
     def name(self):
-        """Returns the display name of this Sync Box."""
+        """Returns the display name of this meter."""
         return self._name or self._device_name
 
     @property
     def state(self):
-        """Returns on/off sync state of Sync Box."""
+        """Returns state of meter."""
         return self.active_power_w
 
     @property

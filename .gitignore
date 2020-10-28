@@ -16,7 +16,6 @@ __pycache__
 *.sqlite
 *.xml
 *.backup
-*.json
 life360.sh
 .ip_authenticated.yaml
 ip_bans.yaml

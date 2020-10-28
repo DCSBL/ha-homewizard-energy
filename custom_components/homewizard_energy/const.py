@@ -3,7 +3,7 @@
 from homeassistant import const
 
 # Set up.
-DOMAIN = "homewizard_energy_p1"
+DOMAIN = "homewizard_energy"
 PLATFORMS = ["sensor"]
 
 # Platform config.
