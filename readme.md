@@ -1,14 +1,14 @@
 # HomeWizard Energy P1 Meter
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
 
-![HomeWizard Energy Logo](https://is4-ssl.mzstatic.com/image/thumb/Purple124/v4/fb/10/f1/fb10f1a2-49a5-3d4b-7741-e0f784b97391/source/250x250bb.jpg "HomeWizard Energy")
+![HomeWizard Energy Logo](https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/homewizard_energy/logo.png "HomeWizard Energy")
 
 ## Installation
 
 > Make sure the HomeWizard Energy P1 Meter has been connected to the same network as your Home Assistant installation and you now the IP address.
 
 ### HACS (https://hacs.xyz)
-* TODO
+* Integration submitted to HACS. Please stand-by.
 
 ### Manually
 * Install the custom component by downloading it and copy it to the custom_components directory as usual.
@@ -24,7 +24,7 @@ Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p
 ## Todo's
 Things still to do before it is ready for everyone
 
-* Make repository HACS compatible
+* ~Make repository HACS compatible~
 * Make polling rate adjustable
 * Extend translation for everything relevant
 * Write some tests
