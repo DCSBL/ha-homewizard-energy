@@ -4,6 +4,7 @@
   "documentation": "https://github.com/Unsigus/hass-homewizard-energy",
   "dependencies": [],
   "codeowners": ["@unsigus"],
+  "issue_tracker": "https://github.com/Unsigus/hass-homewizard-energy/issues",
   "requirements": [],
   "config_flow": true
 }
