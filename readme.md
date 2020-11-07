@@ -1,7 +1,7 @@
 # HomeWizard Energy P1 Meter
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
 
-![HomeWizard Energy Logo](https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/homewizard_energy/logo.png "HomeWizard Energy")
+![HomeWizard Energy Logo](https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/homewizard_energy/icon.png "HomeWizard Energy")
 
 ## Installation
 
