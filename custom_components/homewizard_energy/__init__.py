@@ -1,6 +1,7 @@
 """HomeWizard Energy P1 meter integration."""
 
 import logging
+
 import voluptuous
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.helpers import config_validation

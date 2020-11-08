@@ -1,18 +1,17 @@
 """Creates Homewizard Energy sensor entities."""
 
 import logging
-import async_timeout
-
 from datetime import timedelta
+
+import async_timeout
 from homeassistant import util
 from homeassistant.const import (
     CONF_IP_ADDRESS,
-    POWER_WATT,
     ENERGY_KILO_WATT_HOUR,
-    VOLUME_CUBIC_METERS,
     PERCENTAGE,
+    POWER_WATT,
+    VOLUME_CUBIC_METERS,
 )
-
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -25,32 +24,41 @@ _LOGGER = logging.getLogger(__name__)
 _PLATFORM = "sensor"
 
 SENSORS = {
-    const.ATTR_SMR_VERSION: {"icon": "mdi:gauge", "unit": POWER_WATT},
-    const.ATTR_METER_MODEL: {"icon": "mdi:gauge", "unit": ""},
-    const.ATTR_WIFI_SSID: {"icon": "mdi:gauge", "unit": ""},
-    const.ATTR_WIFI_STRENGTH: {"icon": "mdi:gauge", "unit": PERCENTAGE},
+    const.ATTR_SMR_VERSION: {"icon": "mdi:pound", "unit": ""},
+    const.ATTR_METER_MODEL: {"icon": "mdi:counter", "unit": ""},
+    const.ATTR_WIFI_SSID: {"icon": "mdi:wifi", "unit": ""},
+    const.ATTR_WIFI_STRENGTH: {"icon": "mdi:wifi", "unit": PERCENTAGE},
     const.ATTR_TOTAL_POWER_IMPORT_T1_KWH: {
-        "icon": "mdi:gauge",
+        "icon": "mdi:home-import-outline",
         "unit": ENERGY_KILO_WATT_HOUR,
     },
     const.ATTR_TOTAL_POWER_IMPORT_T2_KWH: {
-        "icon": "mdi:gauge",
+        "icon": "mdi:home-import-outline",
         "unit": ENERGY_KILO_WATT_HOUR,
     },
     const.ATTR_TOTAL_POWER_EXPORT_T1_KWH: {
-        "icon": "mdi:gauge",
+        "icon": "mdi:home-export-outline",
         "unit": ENERGY_KILO_WATT_HOUR,
     },
     const.ATTR_TOTAL_POWER_EXPORT_T2_KWH: {
-        "icon": "mdi:gauge",
+        "icon": "mdi:home-export-outline",
         "unit": ENERGY_KILO_WATT_HOUR,
     },
-    const.ATTR_ACTIVE_POWER_W: {"icon": "mdi:gauge", "unit": POWER_WATT},
-    const.ATTR_ACTIVE_POWER_L1_W: {"icon": "mdi:gauge", "unit": POWER_WATT},
-    const.ATTR_ACTIVE_POWER_L2_W: {"icon": "mdi:gauge", "unit": POWER_WATT},
-    const.ATTR_ACTIVE_POWER_L3_W: {"icon": "mdi:gauge", "unit": POWER_WATT},
-    const.ATTR_TOTAL_GAS_M3: {"icon": "mdi:gauge", "unit": VOLUME_CUBIC_METERS},
-    const.ATTR_GAS_TIMESTAMP: {"icon": "mdi:gauge", "unit": ""},
+    const.ATTR_ACTIVE_POWER_W: {"icon": "mdi:transmission-tower", "unit": POWER_WATT},
+    const.ATTR_ACTIVE_POWER_L1_W: {
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
+    },
+    const.ATTR_ACTIVE_POWER_L2_W: {
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
+    },
+    const.ATTR_ACTIVE_POWER_L3_W: {
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
+    },
+    const.ATTR_TOTAL_GAS_M3: {"icon": "mdi:fire", "unit": VOLUME_CUBIC_METERS},
+    const.ATTR_GAS_TIMESTAMP: {"icon": "mdi:timeline-clock", "unit": ""},
 }
 
 
