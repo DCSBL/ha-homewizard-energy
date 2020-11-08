@@ -6,10 +6,7 @@ API Documentation: https://energy.homewizard.net/en/support/solutions/articles/1
 import enum
 import json
 import logging
-
 import requests
-
-from . import const
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,13 +35,13 @@ class HWEP1Api(object):
         _LOGGER.debug(f"HomeWizard Energy P1 meter with IP {ip_address} initialized.")
 
     # Public methods.
-    def get_energy_data(self):
+    async def get_energy_data(self):
         """Gets energy data
 
         Returns:
           Dictionary containing device information.
         """
-        response = self._call_api_endpoint(HWEP1Endpoints.ENERGY_DATA)
+        response = await self._call_api_endpoint(HWEP1Endpoints.ENERGY_DATA)
         return response.json()
 
     # Helpers.
@@ -62,7 +59,7 @@ class HWEP1Api(object):
             endpoint=api_endpoint.value,
         )
 
-    def _call_api_endpoint(self, api_endpoint, payload=None):
+    async def _call_api_endpoint(self, api_endpoint, payload=None):
         """Makes a call to the HomeWizard Energy endpoint
 
         Args:
@@ -82,11 +79,11 @@ class HWEP1Api(object):
         else:
             raise NotImplementedError("Unknown API endpoint.")
 
-        _LOGGER.info(
+        _LOGGER.debug(
             f"Made {response.request.method} request to {response.request.url} "
             f"with body: {response.request.body}"
         )
 
-        _LOGGER.info(f"{response}")
+        _LOGGER.debug(f"{response}")
 
         return response
