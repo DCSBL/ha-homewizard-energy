@@ -1,15 +1,14 @@
 """Config flow for P1 meter."""
 
-from homeassistant import config_entries
 from typing import Any, Dict, Optional
-from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
-from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 import voluptuous as vol
+from homeassistant import config_entries
+from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
+from homeassistant.const import CONF_IP_ADDRESS
+from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 
 from .const import DOMAIN
-
-from homeassistant.const import CONF_IP_ADDRESS
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

@@ -1,24 +1,20 @@
 """HomeWizard Energy P1 meter integration."""
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
+
 import async_timeout
-
-from homeassistant.helpers import config_validation
 import voluptuous
-
 from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
-
+from homeassistant.helpers import config_validation
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
     UpdateFailed,
 )
 
-from . import const
-from . import services
 from . import api as hw_api
-from . import sensor
+from . import const, sensor, services
 
 _LOGGER = logging.getLogger(__name__)
 

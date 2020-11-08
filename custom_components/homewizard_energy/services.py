@@ -1,10 +1,9 @@
 """Defines services that HomeWizard Energy component supports."""
 
 import logging
-import voluptuous
 
-from homeassistant.helpers import config_validation
-from homeassistant.helpers import service
+import voluptuous
+from homeassistant.helpers import config_validation, service
 
 from . import const
 

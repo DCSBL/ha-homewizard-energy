@@ -6,10 +6,10 @@ API Documentation: https://energy.homewizard.net/en/support/solutions/articles/1
 import enum
 import json
 import logging
+
 import requests
 
 from . import const
-
 
 _LOGGER = logging.getLogger(__name__)
 
