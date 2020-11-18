@@ -10,12 +10,22 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Installation
 ### HACS (https://hacs.xyz)
-* Integration submitted to HACS. Please stand-by.
+> This is the recommended method
+* Have HACS installed.
+* Go to your HACS setup page.
+* Press "Integrations" > 3 dots (upper-right) > 'Custom repositories'.
+* Enter the URL of this repo (https://github.com/Unsigus/hass-homewizard-energy/), select 'Integration' category and press ADD.
+* Restart Home Assistant.
 
 ### Manually
 * Install the custom component by downloading it and copy it to the custom_components directory as usual.
 * Restart Home Assistant.
 * Devices will be found automatically.
+
+## Usage
+* Go to Configuration > Integrations > and add the 'HomeWizard Energy' integration.
+* Enter the IP address of the P1 meter.
+* Add the sensors you want to view in in your dashboard.
 
 ## Discussion
 Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p1-dsmr-dongle-homewizard-energy) or the Dutch website [Tweakers (NL)](https://gathering.tweakers.net/forum/list_messages/2002754/last)
