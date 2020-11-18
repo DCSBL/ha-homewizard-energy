@@ -37,8 +37,5 @@ Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p
 Things still to do before it is ready for everyone
 
 * ~Make repository HACS compatible~
-* Make polling rate adjustable
-* Extend translation for everything relevant
-* Write some tests
-* Code cleanup
-* Submit to HA official repo
+* ~Make polling rate relevant to device~
+* Prepare integration for other HomeWizard Energy devices
