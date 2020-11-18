@@ -4,10 +4,8 @@ API Documentation: https://energy.homewizard.net/en/support/solutions/articles/1
 """
 
 import enum
-import json
 import logging
-
-import requests
+import aiohttp
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,8 +40,8 @@ class HWEP1Api(object):
         Returns:
           Dictionary containing device information.
         """
-        response = await self._call_api_endpoint(HWEP1Endpoints.ENERGY_DATA)
-        return response.json()
+        return await self._call_api_endpoint(HWEP1Endpoints.ENERGY_DATA)
+        # return response
 
     # Helpers.
     def _get_api_url(self, api_endpoint):
@@ -76,15 +74,13 @@ class HWEP1Api(object):
         }
 
         if api_endpoint == HWEP1Endpoints.ENERGY_DATA:
-            response = requests.get(api_url, data=json.dumps(payload), verify=False)
+
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url, headers=api_headers, timeout=30) as r:
+                    response = await r.json()
         else:
             raise NotImplementedError("Unknown API endpoint.")
 
-        _LOGGER.debug(
-            f"Made {response.request.method} request to {response.request.url} "
-            f"with body: {response.request.body}"
-        )
-
-        _LOGGER.debug(f"{response}")
+        _LOGGER.debug(f"Received body: {response}")
 
         return response
