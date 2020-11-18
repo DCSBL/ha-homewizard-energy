@@ -6,7 +6,6 @@ API Documentation: https://energy.homewizard.net/en/support/solutions/articles/1
 import enum
 import json
 import logging
-
 import requests
 
 _LOGGER = logging.getLogger(__name__)
@@ -76,6 +75,7 @@ class HWEP1Api(object):
         }
 
         if api_endpoint == HWEP1Endpoints.ENERGY_DATA:
+
             response = requests.get(api_url, data=json.dumps(payload), verify=False)
         else:
             raise NotImplementedError("Unknown API endpoint.")
