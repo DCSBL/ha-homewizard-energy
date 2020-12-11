@@ -1,5 +1,6 @@
 """Creates Homewizard Energy sensor entities."""
-
+import sys
+from config.custom_components.homewizard_energy.aiohwenergy.aiohwenergy import data
 from .aiohwenergy import aiohwenergy
 import logging
 import async_timeout
@@ -25,41 +26,41 @@ Logger = logging.getLogger(__name__)
 _PLATFORM = "sensor"
 
 SENSORS = {
-    # const.ATTR_SMR_VERSION: {"icon": "mdi:pound", "unit": ""},
-    # const.ATTR_METER_MODEL: {"icon": "mdi:counter", "unit": ""},
-    # const.ATTR_WIFI_SSID: {"icon": "mdi:wifi", "unit": ""},
-    # const.ATTR_WIFI_STRENGTH: {"icon": "mdi:wifi", "unit": PERCENTAGE},
-    # const.ATTR_TOTAL_POWER_IMPORT_T1_KWH: {
-    #     "icon": "mdi:home-import-outline",
-    #     "unit": ENERGY_KILO_WATT_HOUR,
-    # },
-    # const.ATTR_TOTAL_POWER_IMPORT_T2_KWH: {
-    #     "icon": "mdi:home-import-outline",
-    #     "unit": ENERGY_KILO_WATT_HOUR,
-    # },
-    # const.ATTR_TOTAL_POWER_EXPORT_T1_KWH: {
-    #     "icon": "mdi:home-export-outline",
-    #     "unit": ENERGY_KILO_WATT_HOUR,
-    # },
-    # const.ATTR_TOTAL_POWER_EXPORT_T2_KWH: {
-    #     "icon": "mdi:home-export-outline",
-    #     "unit": ENERGY_KILO_WATT_HOUR,
-    # },
+    const.ATTR_SMR_VERSION: {"icon": "mdi:pound", "unit": ""},
+    const.ATTR_METER_MODEL: {"icon": "mdi:counter", "unit": ""},
+    const.ATTR_WIFI_SSID: {"icon": "mdi:wifi", "unit": ""},
+    const.ATTR_WIFI_STRENGTH: {"icon": "mdi:wifi", "unit": PERCENTAGE},
+    const.ATTR_TOTAL_POWER_IMPORT_T1_KWH: {
+        "icon": "mdi:home-import-outline",
+        "unit": ENERGY_KILO_WATT_HOUR,
+    },
+    const.ATTR_TOTAL_POWER_IMPORT_T2_KWH: {
+        "icon": "mdi:home-import-outline",
+        "unit": ENERGY_KILO_WATT_HOUR,
+    },
+    const.ATTR_TOTAL_POWER_EXPORT_T1_KWH: {
+        "icon": "mdi:home-export-outline",
+        "unit": ENERGY_KILO_WATT_HOUR,
+    },
+    const.ATTR_TOTAL_POWER_EXPORT_T2_KWH: {
+        "icon": "mdi:home-export-outline",
+        "unit": ENERGY_KILO_WATT_HOUR,
+    },
     const.ATTR_ACTIVE_POWER_W: {"icon": "mdi:transmission-tower", "unit": POWER_WATT},
-    # const.ATTR_ACTIVE_POWER_L1_W: {
-    #     "icon": "mdi:transmission-tower",
-    #     "unit": POWER_WATT,
-    # },
-    # const.ATTR_ACTIVE_POWER_L2_W: {
-    #     "icon": "mdi:transmission-tower",
-    #     "unit": POWER_WATT,
-    # },
-    # const.ATTR_ACTIVE_POWER_L3_W: {
-    #     "icon": "mdi:transmission-tower",
-    #     "unit": POWER_WATT,
-    # },
-    # const.ATTR_TOTAL_GAS_M3: {"icon": "mdi:fire", "unit": VOLUME_CUBIC_METERS},
-    # const.ATTR_GAS_TIMESTAMP: {"icon": "mdi:timeline-clock", "unit": ""},
+    const.ATTR_ACTIVE_POWER_L1_W: {
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
+    },
+    const.ATTR_ACTIVE_POWER_L2_W: {
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
+    },
+    const.ATTR_ACTIVE_POWER_L3_W: {
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
+    },
+    const.ATTR_TOTAL_GAS_M3: {"icon": "mdi:fire", "unit": VOLUME_CUBIC_METERS},
+    const.ATTR_GAS_TIMESTAMP: {"icon": "mdi:timeline-clock", "unit": ""},
 }
 
 
@@ -81,11 +82,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
             try:
                 await energy_api.data.update()
                 
-                new_data = {}
-                for entry_point in SENSORS:
-                    new_data[entry_point] = getattr(energy_api.data, entry_point)
+                data = {}
+                for datapoint in energy_api.data.available_datapoints:
+                    data[datapoint] = getattr(energy_api.data, datapoint)
                 
-                return new_data
+                return data
             except AttributeError:
                 return
     
@@ -126,8 +127,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
     # services.register_services(hass)
     async_add_entities(
-        device_hwe_p1(coordinator, entry.data, info_type)
-        for info_type in SENSORS
+        device_hwe_p1(coordinator, entry.data, datapoint)
+        for datapoint in energy_api.data.available_datapoints
     )
 
     return True
