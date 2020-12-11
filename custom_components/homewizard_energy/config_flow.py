@@ -56,9 +56,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             Logger.warning("Device not supported by integration")
             return self.async_abort(reason="device_not_supported")
         
-        if entry_info["api_enabled"] != "1":
-            Logger.warning("API not enabled, please enable API in app")
-            return self.async_abort(reason="api_not_enabled")
+        # if entry_info["api_enabled"] != "1":
+        #     Logger.warning("API not enabled, please enable API in app")
+        #     return self.async_abort(reason="api_not_enabled")
         
         Logger.debug(f"entry_info: {entry_info}")
         
@@ -114,6 +114,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors=errors
             )
         else:
+            
+            if self.context["api_enabled"] != "1":
+                Logger.warning("API not enabled, please enable API in app")
+                return self.async_abort(reason="api_not_enabled")
+            
             Logger.debug("async_step_discovery_confirm _create_entry")
             self.context["custom_name"] = user_input["name"] if user_input["name"] != "" else self.context["name"]
             if (Lower(self.context["product_name"]) != Lower(user_input["name"])):
