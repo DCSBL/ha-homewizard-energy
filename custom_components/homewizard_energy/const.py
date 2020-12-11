@@ -1,4 +1,4 @@
-"""Constants and common variables for HomeWizard Energy P1 meter."""
+"""Constants for the Homewizard Energy integration."""
 
 from homeassistant import const
 

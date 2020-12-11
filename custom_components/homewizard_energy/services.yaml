@@ -1,6 +1,0 @@
-update:
-  description: "Updates device information."
-  fields:
-    entity_id:
-      description: "Name(s) of the entities to update"
-      example: "sensor.p1_meter"

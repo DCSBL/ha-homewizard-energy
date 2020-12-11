@@ -1,34 +1,56 @@
-"""HomeWizard Energy P1 meter integration."""
+"""The Homewizard Energy integration."""
+import asyncio
+
+import voluptuous as vol
 
 import logging
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
-import voluptuous
-from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
-from homeassistant.helpers import config_validation
+from .const import DOMAIN
 
-from . import const
+Logger = logging.getLogger(__name__)
 
-_LOGGER = logging.getLogger(__name__)
+CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 
-PLATFORM_SCHEMA = config_validation.PLATFORM_SCHEMA.extend(
-    {
-        voluptuous.Required(const.CONF_IP_ADDRESS): config_validation.string,
-        voluptuous.Optional(const.CONF_NAME): config_validation.string,
-    }
-)
+# TODO List the platforms that you want to support.
+# For your initial PR, limit it to 1 platform.
+PLATFORMS = ["sensor"]
 
 
-async def async_setup(hass, config):
-    hass.data[const.DOMAIN] = {}
+async def async_setup(hass: HomeAssistant, config: dict):
+    """Set up the Homewizard Energy component."""
+    Logger.debug("__init__ async_setup")
     return True
 
 
-async def async_setup_entry(hass, entry):
-    """Config entry example."""
-    # assuming API object stored here by __init__.py
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Set up Homewizard Energy from a config entry."""
+    # TODO Store an API object for your platforms to access
+    # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
+    Logger.debug("__init__ async_setup_entry")
+    
+    for component in PLATFORMS:
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, component)
+        )
 
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Unload a config entry."""
+    Logger.debug("__init__ async_unload_entry")
+    
+    unload_ok = all(
+        await asyncio.gather(
+            *[
+                hass.config_entries.async_forward_entry_unload(entry, component)
+                for component in PLATFORMS
+            ]
+        )
     )
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
 
-    return True
+    return unload_ok
