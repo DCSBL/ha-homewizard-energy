@@ -1,11 +1,12 @@
 """The Homewizard Energy integration."""
 import asyncio
-
 import voluptuous as vol
 
 import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+
+from .energydevice import HwEnergyDevice, async_remove_entry_from_huesyncbox
 
 from .const import DOMAIN
 
@@ -21,14 +22,18 @@ PLATFORMS = ["sensor"]
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the Homewizard Energy component."""
     Logger.debug("__init__ async_setup")
+    hass.data[DOMAIN] = {}
+    
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Homewizard Energy from a config entry."""
-    # TODO Store an API object for your platforms to access
-    # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
+
     Logger.debug("__init__ async_setup_entry")
+    
+    energydevice = HwEnergyDevice(hass, entry)
+    hass.data[DOMAIN][entry.data["unique_id"]] = energydevice
     
     for component in PLATFORMS:
         hass.async_create_task(
@@ -51,6 +56,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
     )
     if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
+        Logger.info(hass.data[DOMAIN])
+        energydevice = hass.data[DOMAIN].pop(entry.data["unique_id"])
+        await energydevice.api.close()
 
     return unload_ok
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    # Best effort cleanup. User might not even have the device anymore or had it factory reset.
+    # Note that the entry already has been unloaded.
+    try:
+        await async_remove_entry_from_huesyncbox(entry)
+    except Exception as e:
+        Logger.warning("Unregistering Philips Hue Play HDMI Sync Box failed: %s ", e)

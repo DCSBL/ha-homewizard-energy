@@ -168,7 +168,8 @@ class device_hwe_p1(CoordinatorEntity):
         # Config attributes.
         self.name = "%s %s" % (entry_data['custom_name'], SENSORS[info_type]["name"])
 
-        self.api = None
+        # self.energydevice = energydevice
+        # energydevice.entity = self
 
         self.host = entry_data["host"]
         self.info_type = info_type

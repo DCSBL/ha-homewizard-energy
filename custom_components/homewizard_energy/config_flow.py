@@ -103,7 +103,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
         
         schema = Schema({
-            Required('name'): All(str, Length(min=1, max=20))
+            Required('name', default=self.context["product_name"]): All(str, Length(min=1, max=20))
         })
         
         if user_input is None:

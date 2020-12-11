@@ -8,7 +8,7 @@
         },
         "step": {
             "discovery_confirm": {
-                "description": "Please enter a name for {name}:"
+                "description": "Please enter a name for your {name}:"
             }
         }
     },

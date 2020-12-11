@@ -4,6 +4,7 @@ from homeassistant import const
 
 # Set up.
 DOMAIN = "homewizard_energy"
+MANUFACTURER_NAME = "HomeWizard"
 PLATFORMS = ["sensor"]
 
 # Platform config.
@@ -13,6 +14,8 @@ CONF_NAME = const.CONF_NAME
 
 # Services.
 SERVICE_UPDATE = "update"
+
+
 
 # Service attributes.
 ATTR_SMR_VERSION = "smr_version"
@@ -33,3 +36,4 @@ ATTR_GAS_TIMESTAMP = "gas_timestamp"
 # Default values.
 DEFAULT_STR_VALUE = "undefined"
 DEVICE_DEFAULT_NAME = "P1 Meter"
+
