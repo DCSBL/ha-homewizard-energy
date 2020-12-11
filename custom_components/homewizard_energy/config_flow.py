@@ -1,9 +1,15 @@
 """Config flow for Homewizard Energy."""
-import aiohwenergy
+from aiohwenergy.hwenergy import SUPPORTED_DEVICES
 
 import logging
+
+from voluptuous.util import Lower
+
 from homeassistant import config_entries
 from homeassistant.helpers import config_entry_flow
+
+from voluptuous import Schema
+from voluptuous import Required, All, Length
 
 from .const import DOMAIN
 
@@ -28,7 +34,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle zeroconf discovery."""
 
         Logger.debug("config_flow async_step_zeroconf")
-        Logger.debug(discovery_info["properties"])
         
         entry_info = {
             "host": discovery_info["host"],
@@ -37,54 +42,56 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             "path": discovery_info["properties"]['path'] if 'path' in discovery_info["properties"] else None,
             "product_name": discovery_info["properties"]['product_name'] if 'product_name' in discovery_info["properties"] else None,
             "product_type": discovery_info["properties"]['product_type'] if 'product_type' in discovery_info["properties"] else None,
-            "unique_id": discovery_info["properties"]['serial'] if 'serial' in discovery_info["properties"] else None
+            "serial": discovery_info["properties"]['serial'] if 'serial' in discovery_info["properties"] else None
         }
-
-        Logger.debug(f"Found info: { entry_info['host'] } { entry_info['unique_id'] }.")
-
+        
         return await self.async_step_check(entry_info)
         
     async def async_step_check(self, entry_info):
         """Perform some checks and create entry if OK."""
         
         Logger.debug("config_flow async_step_check")
-
-        await self.async_set_unique_id(entry_info["unique_id"])
-        self._abort_if_unique_id_configured(updates=entry_info)
-
+        
+        if (entry_info["product_type"] not in SUPPORTED_DEVICES):
+            Logger.warning("Device not supported by integration")
+            return self.async_abort(reason="device_not_supported")
+        
         if entry_info["api_enabled"] != "1":
-            Logger.warning("API not enabled")
+            Logger.warning("API not enabled, please enable API in app")
             return self.async_abort(reason="api_not_enabled")
         
         Logger.debug(f"entry_info: {entry_info}")
         
-        if ((entry_info["host"] == None) or
-            (entry_info["port"] == None) or
-            (entry_info["unique_id"] == None) or
-            (entry_info["product_name"] == None) or
-            (entry_info["product_type"] == None) or
-            (entry_info["path"] == None) or
-            (entry_info["api_enabled"] == None)):
+        if (("host" not in entry_info) or
+            ("port" not in entry_info) or
+            ("serial" not in entry_info) or
+            ("product_name" not in entry_info) or
+            ("product_type" not in entry_info) or
+            ("path" not in entry_info) or
+            ("api_enabled" not in entry_info)):
             Logger.warning(f"Invalid discovery parameters")
             return self.async_abort(reason="invalid_discovery_parameters")
             
         self.context["host"] = entry_info["host"]
-        self.context["unique_id"] = entry_info["unique_id"]
+        self.context["unique_id"] = "%s_%s" % (entry_info['product_type'], entry_info['serial'])
+        self.context["serial"] = entry_info['serial']
         self.context["port"] = entry_info["port"]
-        self.context["product_name"] = entry_info["product_name"]
         self.context["path"] = entry_info["path"]
+        self.context["product_name"] = entry_info["product_name"]
         self.context["product_type"] = entry_info["product_type"]
         self.context["api_enabled"] = entry_info["api_enabled"]
+        
+        self.context["name"] = "%s (%s)" % (self.context["product_name"], self.context["serial"][-6:])
+        
+        await self.async_set_unique_id(self.context["unique_id"])
+        self._abort_if_unique_id_configured(updates=entry_info)
 
         self.context["title_placeholders"] = {
-            "name": self.context["product_name"],
+            "name": self.context["name"],
             "unique_id": self.context["unique_id"],
         }
-
-        # api = await async_get_aiohuesyncbox_from_entry_data(entry_info)
-        # if await api.is_registered():
-        #     await api.close()
-        # return await self._async_create_entry_from_context()
+        
+        # TODO Check if device is already configured (but maybe moved to new IP)
 
         return await self.async_step_discovery_confirm()
         
@@ -95,32 +102,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         
         errors = {}
         
-        if self.context["api_enabled"] != "1":
-            Logger.warning(f"API not enabled")
-            errors["base"] = "api_not_enabled"
-            return self.async_show_form(step_id="discovery_confirm", errors=errors)
+        schema = Schema({
+            Required('name'): All(str, Length(min=1, max=20))
+        })
         
         if user_input is None:
-            Logger.debug("async_step_discovery_confirm user_input is None")
             return self.async_show_form(
                 step_id="discovery_confirm",
-                description_placeholders={"name": "aaabbbccc"},
+                description_placeholders={"name": self.context["product_name"]},
+                data_schema=schema, 
+                errors=errors
             )
-        
-        Logger.debug("async_step_discovery_confirm _create_entry")
-        
-        return self.async_create_entry(
-            title=self.context["product_name"],
-            data=self.context,
-        )
-
-# async def _async_has_devices(hass) -> bool:
-#     """Return if there are devices that can be discovered."""
-#     # TODO Check if there are any devices that can be discovered in the network.
-#     devices = await hass.async_add_executor_job(aiohwenergy.discover)
-#     return len(devices) > 0
-
-
-# config_entry_flow.register_discovery_flow(
-#     DOMAIN, "Homewizard Energy", _async_has_devices, config_entries.CONN_CLASS_UNKNOWN
-# )
+        else:
+            Logger.debug("async_step_discovery_confirm _create_entry")
+            self.context["custom_name"] = user_input["name"] if user_input["name"] != "" else self.context["name"]
+            if (Lower(self.context["product_name"]) != Lower(user_input["name"])):
+                title = "%s (%s)" % (self.context["product_name"], self.context["custom_name"])
+            else:
+                title = self.context["custom_name"]
+                
+            return self.async_create_entry(
+                title=title,
+                data=self.context,
+            )        

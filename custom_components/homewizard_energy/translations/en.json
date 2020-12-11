@@ -1,12 +1,14 @@
 {
     "config": {
+        "flow_title": "{name}",
         "abort": {
             "no_devices_found": "No devices found on the network",
-            "single_instance_allowed": "Already configured. Only a single configuration possible."
+            "single_instance_allowed": "Already configured. Only a single configuration possible.",
+            "api_not_enabled": "api_not_enabled"
         },
         "step": {
-            "confirm": {
-                "description": "Do you want to start set up?"
+            "discovery_confirm": {
+                "description": "Please enter a name for {name}:"
             }
         }
     },
