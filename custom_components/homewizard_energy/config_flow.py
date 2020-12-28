@@ -63,7 +63,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             Logger.warning(
                 "Device (%s) not supported by integration" % entry_info["product_type"]
             )
-            return self.async_abort(reason="device_not_supported")
+            # return self.async_abort(reason="device_not_supported")
 
         # if entry_info["api_enabled"] != "1":
         #     Logger.warning("API not enabled, please enable API in app")
