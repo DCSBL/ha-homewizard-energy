@@ -1,4 +1,4 @@
-"""Code to handle a Philips Hue Play HDMI Sync Box."""
+"""Code to handle a Energy device Sync Box."""
 import asyncio
 import logging
 import aiohwenergy
@@ -32,7 +32,7 @@ class HwEnergyDevice:
         return output
 
     async def async_setup(self, tries=0):
-        """Set up a huesyncbox based on host parameter."""
+        """Set up a Home Wizard Energy device."""
         hass = self.hass
 
         initialized = False
@@ -42,26 +42,23 @@ class HwEnergyDevice:
                 await self.api.initialize()
                 await self.async_update_registered_device_info() # Info might have changed while HA was not running
                 initialized = True
-        except (aiohwenergy.InvalidState, aiohwenergy.Unauthorized):
-            Logger.error("Authorization data for Philips Hue Play HDMI Sync Box %s is invalid. Delete and setup the integration again.", self.config_entry.data["unique_id"])
-            return False
         except (asyncio.TimeoutError, aiohwenergy.RequestError):
-            Logger.error("Error connecting to the Philips Hue Play HDMI Sync Box at %s", self.config_entry.data["host"])
+            Logger.error("Error connecting to the Energy device at %s", self.config_entry.data["host"])
             raise ConfigEntryNotReady
-        except aiohwenergy.AiohuesyncboxException:
-            Logger.exception("Unknown Philips Hue Play HDMI Sync Box API error occurred")
+        except aiohwenergy.AioHwEnergyException:
+            Logger.exception("Unknown Energy API error occurred")
             raise ConfigEntryNotReady
         except Exception:  # pylint: disable=broad-except
-            Logger.exception("Unknown error connecting with Philips Hue Play HDMI Sync Box at %s", self.config_entry.data["host"])
+            Logger.exception("Unknown error connecting with Energy Device at %s", self.config_entry.data["host"])
             return False
         finally:
             if not initialized:
                 await self.api.close()
 
-        huesyncbox = self # Alias for use in async_stop
+        hwenergy = self # Alias for use in async_stop
         async def async_stop(self, event=None) -> None:
             """Unsubscribe from events."""
-            await huesyncbox.async_reset()
+            await hwenergy.async_reset()
 
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, async_stop)
 
@@ -69,7 +66,7 @@ class HwEnergyDevice:
 
     async def async_reset(self):
         """
-        Reset this huesyncbox to default state.
+        Reset this energy device to default state.
         """
         if self.api is not None:
             await self.api.close()
@@ -117,20 +114,15 @@ async def async_register_aiohwenergy(hass, api):
         raise AuthenticationRequired
     except aiohwenergy.RequestError:
         raise CannotConnect
-    except aiohwenergy.AiohuesyncboxException:
-        Logger.exception("Unknown Philips Hue Play HDMI Sync Box error occurred")
+    except aiohwenergy.AioHwEnergyException:
+        Logger.exception("Unknown HomeWizard Energy error occurred")
         raise CannotConnect
 
 async def async_get_aiohwenergy_from_entry_data(entry_data):
-    """Create a huesyncbox object from entry data."""
+    """Create a HwEnergyDevice object from entry data."""
 
     Logger.debug("%s async_get_aiohwenergy_from_entry_data\nentry_data:\n%s" % (__name__, str(entry_data)))
 
-    return aiohwenergy.HueSyncBox(
+    return aiohwenergy.HomeWizardEnergy(
         entry_data["host"],
     )
-
-async def async_remove_entry_from_huesyncbox(entry):
-    with async_timeout.timeout(10):
-        async with await async_get_aiohwenergy_from_entry_data(entry.data) as api:
-            await api.unregister(entry.data['registration_id'])

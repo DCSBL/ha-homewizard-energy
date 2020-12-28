@@ -15,8 +15,6 @@ CONF_NAME = const.CONF_NAME
 # Services.
 SERVICE_UPDATE = "update"
 
-
-
 # Service attributes.
 ATTR_SMR_VERSION = "smr_version"
 ATTR_METER_MODEL = "meter_model"

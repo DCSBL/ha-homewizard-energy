@@ -53,7 +53,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         Logger.debug("config_flow async_step_check")
         
         if (entry_info["product_type"] not in SUPPORTED_DEVICES):
-            Logger.warning("Device not supported by integration")
+            Logger.warning("Device (%s) not supported by integration" % entry_info["product_type"])
             return self.async_abort(reason="device_not_supported")
         
         # if entry_info["api_enabled"] != "1":

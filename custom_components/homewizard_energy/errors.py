@@ -1,14 +1,14 @@
-"""Errors for the HueSyncBox component."""
+"""Errors for the HomeWizard Energy component."""
 from homeassistant.exceptions import HomeAssistantError
 
 
-class HueSyncBoxException(HomeAssistantError):
-    """Base class for HueSyncBox exceptions."""
+class HwEnergyException(HomeAssistantError):
+    """Base class for HomeWizard Energy exceptions."""
 
 
-class CannotConnect(HueSyncBoxException):
-    """Unable to connect to the syncbox."""
+class CannotConnect(HwEnergyException):
+    """Unable to connect to the energy Device."""
 
 
-class AuthenticationRequired(HueSyncBoxException):
+class AuthenticationRequired(HwEnergyException):
     """Unknown error occurred."""

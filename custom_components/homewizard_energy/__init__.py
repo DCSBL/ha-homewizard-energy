@@ -6,7 +6,7 @@ import logging
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .energydevice import HwEnergyDevice, async_remove_entry_from_huesyncbox
+from .energydevice import HwEnergyDevice
 
 from .const import DOMAIN
 
@@ -55,17 +55,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
             ]
         )
     )
-    if unload_ok:
-        Logger.info(hass.data[DOMAIN])
-        energydevice = hass.data[DOMAIN].pop(entry.data["unique_id"])
-        await energydevice.api.close()
+    Logger.warning("Unloading component not fully developed, restart Home Assistant to fully unload component")
+    # if unload_ok:
+    #     Logger.info(hass.data[DOMAIN])
+    #     energydevice = hass.data[DOMAIN].pop(entry.data["unique_id"])
+    #     await energydevice.api.close()
 
     return unload_ok
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    # Best effort cleanup. User might not even have the device anymore or had it factory reset.
-    # Note that the entry already has been unloaded.
-    try:
-        await async_remove_entry_from_huesyncbox(entry)
-    except Exception as e:
-        Logger.warning("Unregistering Philips Hue Play HDMI Sync Box failed: %s ", e)
+    pass

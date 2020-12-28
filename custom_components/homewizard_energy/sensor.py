@@ -197,7 +197,7 @@ async def async_get_aiohwenergy_from_entry_data(entry_data):
     """Create a HomewizardEnergy object from entry data."""
 
     Logger.debug(
-        "%s async_get_aiohuesyncbox_from_entry_data\nentry_data:\n%s"
+        "%s async_get_aiohwenergy_from_entry_data\nentry_data:\n%s"
         % (__name__, str(entry_data))
     )
 
