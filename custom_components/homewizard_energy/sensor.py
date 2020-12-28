@@ -129,7 +129,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         try:
             smr_version = energy_api.data.smr_version
             if smr_version == 50:
-                update_interval = 5  # TODO set back to 1, Throttle down for now,
+                update_interval = 1
             else:
                 update_interval = 5
         except AttributeError:
