@@ -1,7 +1,6 @@
 """Creates Homewizard Energy sensor entities."""
 import sys
-from config.custom_components.homewizard_energy.aiohwenergy.aiohwenergy import data
-from .aiohwenergy import aiohwenergy
+import aiohwenergy
 import logging
 import async_timeout
 
@@ -96,20 +95,28 @@ async def async_setup_entry(hass, entry, async_add_entities):
         This is the place to pre-process the data to lookup tables
         so entities can quickly look up their data.
         """
+        data = {}
         async with async_timeout.timeout(10):
             try:
-                await energy_api.data.update()
-
-                data = {}
-                for datapoint in energy_api.data.available_datapoints:
-                    data[datapoint] = getattr(energy_api.data, datapoint)
+                status = await energy_api.data.update()
+                
+                
+                if (status):
+                    for datapoint in energy_api.data.available_datapoints:
+                        data[datapoint] = getattr(energy_api.data, datapoint)
 
                 return data
             except AttributeError:
+                Logger.error("Datapoint missing")
                 return
+            except aiohwenergy.errors.InvalidState:
+                Logger.error("Failed tot fetch new data")
+            finally:
+                return data
+            
 
     # Determine update interval
-    # Default update interval
+    ## Default update interval
     update_interval = 5
 
     try:
@@ -144,12 +151,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
     await coordinator.async_refresh()
 
     # services.register_services(hass)
-    async_add_entities(
-        device_hwe_p1(coordinator, entry.data, datapoint)
-        for datapoint in energy_api.data.available_datapoints
-    )
+    if (energy_api.data != None):
+        async_add_entities(
+            device_hwe_p1(coordinator, entry.data, datapoint)
+            for datapoint in energy_api.data.available_datapoints
+        )
 
-    return True
+        return True
+    else:
+        await energy_api.close()
+        return False
 
 
 class device_hwe_p1(CoordinatorEntity):
@@ -186,6 +197,11 @@ class device_hwe_p1(CoordinatorEntity):
     def state(self):
         """Returns state of meter."""
         return self.coordinator.data[self.info_type]
+        
+    @property
+    def available(self):
+        """Returns state of meter."""
+        return self.info_type in self.coordinator.data
 
     @property
     def unit_of_measurement(self):

@@ -56,6 +56,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
     )
     Logger.warning("Unloading component not fully developed, restart Home Assistant to fully unload component")
+    return False
+    
     # if unload_ok:
     #     Logger.info(hass.data[DOMAIN])
     #     energydevice = hass.data[DOMAIN].pop(entry.data["unique_id"])

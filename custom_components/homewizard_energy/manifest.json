@@ -5,7 +5,7 @@
   "issue_tracker": "https://github.com/Unsigus/hass-homewizard-energy/issues",
   "codeowners": ["@unsigus"],
   "dependencies": ["zeroconf"],
-  "requirements": ["aiohwenergy==0.0.1"],
+  "requirements": ["aiohwenergy==0.0.2"],
   "zeroconf": ["_hwenergy._tcp.local."],
   "config_flow": true
 }
