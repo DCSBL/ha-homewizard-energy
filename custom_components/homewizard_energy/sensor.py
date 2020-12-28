@@ -1,18 +1,16 @@
 """Creates Homewizard Energy sensor entities."""
-import sys
-import aiohwenergy
 import logging
-import async_timeout
-
+import sys
 from datetime import timedelta
 
+import aiohwenergy
+import async_timeout
 from homeassistant.const import (
     ENERGY_KILO_WATT_HOUR,
     PERCENTAGE,
     POWER_WATT,
     VOLUME_CUBIC_METERS,
 )
-
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -25,17 +23,14 @@ Logger = logging.getLogger(__name__)
 _PLATFORM = "sensor"
 
 SENSORS = {
-    const.ATTR_SMR_VERSION: {
-        "name": "SMR version", "icon": "mdi:pound", "unit": ""
-    },
-    const.ATTR_METER_MODEL: {
-        "name": "Model", "icon": "mdi:counter", "unit": ""
-    },
-    const.ATTR_WIFI_SSID: {
-        "name": "Wifi SSID", "icon": "mdi:wifi", "unit": ""
-    },
+    const.ATTR_SMR_VERSION: {"name": "SMR version", "icon": "mdi:pound", "unit": ""},
+    const.ATTR_METER_MODEL: {"name": "Model", "icon": "mdi:counter", "unit": ""},
+    const.ATTR_WIFI_SSID: {"name": "Wifi SSID", "icon": "mdi:wifi", "unit": ""},
     const.ATTR_WIFI_STRENGTH: {
-        "name": "Wifi Strength", "icon": "mdi:wifi", "unit": PERCENTAGE},
+        "name": "Wifi Strength",
+        "icon": "mdi:wifi",
+        "unit": PERCENTAGE,
+    },
     const.ATTR_TOTAL_POWER_IMPORT_T1_KWH: {
         "name": "Total power import T1",
         "icon": "mdi:home-import-outline",
@@ -57,7 +52,9 @@ SENSORS = {
         "unit": ENERGY_KILO_WATT_HOUR,
     },
     const.ATTR_ACTIVE_POWER_W: {
-        "name": "Active power", "icon": "mdi:transmission-tower", "unit": POWER_WATT
+        "name": "Active power",
+        "icon": "mdi:transmission-tower",
+        "unit": POWER_WATT,
     },
     const.ATTR_ACTIVE_POWER_L1_W: {
         "name": "Active power L1",
@@ -75,9 +72,15 @@ SENSORS = {
         "unit": POWER_WATT,
     },
     const.ATTR_TOTAL_GAS_M3: {
-        "name": "Total gas", "icon": "mdi:fire", "unit": VOLUME_CUBIC_METERS},
+        "name": "Total gas",
+        "icon": "mdi:fire",
+        "unit": VOLUME_CUBIC_METERS,
+    },
     const.ATTR_GAS_TIMESTAMP: {
-        "name": "Gas timestamp", "icon": "mdi:timeline-clock", "unit": ""},
+        "name": "Gas timestamp",
+        "icon": "mdi:timeline-clock",
+        "unit": "",
+    },
 }
 
 
@@ -99,9 +102,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         async with async_timeout.timeout(10):
             try:
                 status = await energy_api.data.update()
-                
-                
-                if (status):
+
+                if status:
                     for datapoint in energy_api.data.available_datapoints:
                         data[datapoint] = getattr(energy_api.data, datapoint)
 
@@ -113,7 +115,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 Logger.error("Failed tot fetch new data")
             finally:
                 return data
-            
 
     # Determine update interval
     ## Default update interval
@@ -124,17 +125,17 @@ async def async_setup_entry(hass, entry, async_add_entities):
     except AttributeError:
         product_type = "Unknown"
 
-    if (product_type == "HWE-P1"):
+    if product_type == "HWE-P1":
         try:
             smr_version = energy_api.data.smr_version
-            if (smr_version == 50):
+            if smr_version == 50:
                 update_interval = 5  # TODO set back to 1, Throttle down for now,
             else:
                 update_interval = 5
         except AttributeError:
             pass
 
-    if (product_type == "SDM230-wifi" or product_type == "SDM630-wifi"):
+    if product_type == "SDM230-wifi" or product_type == "SDM630-wifi":
         update_interval = 1
 
     coordinator = DataUpdateCoordinator(
@@ -151,7 +152,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     await coordinator.async_refresh()
 
     # services.register_services(hass)
-    if (energy_api.data != None):
+    if energy_api.data != None:
         async_add_entities(
             device_hwe_p1(coordinator, entry.data, datapoint)
             for datapoint in energy_api.data.available_datapoints
@@ -177,7 +178,7 @@ class device_hwe_p1(CoordinatorEntity):
         super().__init__(coordinator)
 
         # Config attributes.
-        self.name = "%s %s" % (entry_data['custom_name'], SENSORS[info_type]["name"])
+        self.name = "%s %s" % (entry_data["custom_name"], SENSORS[info_type]["name"])
 
         # self.energydevice = energydevice
         # energydevice.entity = self
@@ -186,7 +187,7 @@ class device_hwe_p1(CoordinatorEntity):
         self.info_type = info_type
         self.coordinator = coordinator
         self.entry_data = entry_data
-        self.unique_id = "%s_%s" % (entry_data['unique_id'], info_type)
+        self.unique_id = "%s_%s" % (entry_data["unique_id"], info_type)
 
     @property
     def icon(self):
@@ -197,7 +198,7 @@ class device_hwe_p1(CoordinatorEntity):
     def state(self):
         """Returns state of meter."""
         return self.coordinator.data[self.info_type]
-        
+
     @property
     def available(self):
         """Returns state of meter."""
@@ -217,6 +218,4 @@ async def async_get_aiohwenergy_from_entry_data(entry_data):
         % (__name__, str(entry_data))
     )
 
-    return aiohwenergy.HomeWizardEnergy(
-        entry_data["host"]
-    )
+    return aiohwenergy.HomeWizardEnergy(entry_data["host"])

@@ -1,10 +1,10 @@
 """Code to handle a Energy device Sync Box."""
 import asyncio
 import logging
+
 import aiohwenergy
 import async_timeout
 import voluptuous as vol
-
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -14,6 +14,7 @@ from .errors import AuthenticationRequired, CannotConnect
 
 Logger = logging.getLogger(__package__)
 
+
 class HwEnergyDevice:
     """Manages a single Homewizard Energy device."""
 
@@ -21,8 +22,8 @@ class HwEnergyDevice:
         """Initialize the system."""
         self.config_entry = config_entry
         self.hass = hass
-        self.api = None # aiohwenergy instance
-        self.entity = None # Sensor entity
+        self.api = None  # aiohwenergy instance
+        self.entity = None  # Sensor entity
 
     def __str__(self):
         output = ""
@@ -37,25 +38,34 @@ class HwEnergyDevice:
 
         initialized = False
         try:
-            self.api = await async_get_aiohwenergy_from_entry_data(self.config_entry.data)
+            self.api = await async_get_aiohwenergy_from_entry_data(
+                self.config_entry.data
+            )
             with async_timeout.timeout(10):
                 await self.api.initialize()
-                await self.async_update_registered_device_info() # Info might have changed while HA was not running
+                await self.async_update_registered_device_info()  # Info might have changed while HA was not running
                 initialized = True
         except (asyncio.TimeoutError, aiohwenergy.RequestError):
-            Logger.error("Error connecting to the Energy device at %s", self.config_entry.data["host"])
+            Logger.error(
+                "Error connecting to the Energy device at %s",
+                self.config_entry.data["host"],
+            )
             raise ConfigEntryNotReady
         except aiohwenergy.AioHwEnergyException:
             Logger.exception("Unknown Energy API error occurred")
             raise ConfigEntryNotReady
         except Exception:  # pylint: disable=broad-except
-            Logger.exception("Unknown error connecting with Energy Device at %s", self.config_entry.data["host"])
+            Logger.exception(
+                "Unknown error connecting with Energy Device at %s",
+                self.config_entry.data["host"],
+            )
             return False
         finally:
             if not initialized:
                 await self.api.close()
 
-        hwenergy = self # Alias for use in async_stop
+        hwenergy = self  # Alias for use in async_stop
+
         async def async_stop(self, event=None) -> None:
             """Unsubscribe from events."""
             await hwenergy.async_reset()
@@ -88,12 +98,15 @@ class HwEnergyDevice:
                 name=self.api.device.product_name,
                 manufacturer=MANUFACTURER_NAME,
                 model=self.api.device.product_type,
-                sw_version= self.api.device.firmware_version,
+                sw_version=self.api.device.firmware_version,
             )
 
             # Title formatting is actually in the translation file, but don't know how to get it from here.
             # Actually it being in the translation is a bit weird anyway since the frontend can be different language
-            self.hass.config_entries.async_update_entry(self.config_entry, title=f"{self.api.device.name} ({self.api.device.unique_id})")
+            self.hass.config_entries.async_update_entry(
+                self.config_entry,
+                title=f"{self.api.device.name} ({self.api.device.unique_id})",
+            )
 
         return True
 
@@ -104,7 +117,9 @@ async def async_register_aiohwenergy(hass, api):
             registration_info = None
             while not registration_info:
                 try:
-                    registration_info = await api.register("Home Assistant", hass.config.location_name)
+                    registration_info = await api.register(
+                        "Home Assistant", hass.config.location_name
+                    )
                 except aiohwenergy.InvalidState:
                     # This is expected as syncbox will be in invalid state until button is pressed
                     pass
@@ -118,10 +133,14 @@ async def async_register_aiohwenergy(hass, api):
         Logger.exception("Unknown HomeWizard Energy error occurred")
         raise CannotConnect
 
+
 async def async_get_aiohwenergy_from_entry_data(entry_data):
     """Create a HwEnergyDevice object from entry data."""
 
-    Logger.debug("%s async_get_aiohwenergy_from_entry_data\nentry_data:\n%s" % (__name__, str(entry_data)))
+    Logger.debug(
+        "%s async_get_aiohwenergy_from_entry_data\nentry_data:\n%s"
+        % (__name__, str(entry_data))
+    )
 
     return aiohwenergy.HomeWizardEnergy(
         entry_data["host"],
