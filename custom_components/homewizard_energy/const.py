@@ -34,4 +34,3 @@ ATTR_GAS_TIMESTAMP = "gas_timestamp"
 # Default values.
 DEFAULT_STR_VALUE = "undefined"
 DEVICE_DEFAULT_NAME = "P1 Meter"
-
