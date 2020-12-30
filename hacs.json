@@ -2,6 +2,8 @@
     "name": "HomeWizard Energy",
     "render_readme": true,
     "domains": ["sensor"],
-    "homeassistant": "0.116.0",
-    "iot_class": "Local Polling"
+    "homeassistant": "2020.12.0",
+    "iot_class": "Local Polling",
+    "zip_release": true,
+    "filename": "homewizard_energy.zip"
 }

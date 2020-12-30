@@ -8,12 +8,14 @@ on:
 jobs:
   update_release_draft:
     runs-on: ubuntu-latest
-    needs: update_release_draft
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Zip Folder
-        run: zip -r homewizard_energy.zip ./custom_components/homewizard_energy
+        run: | # Zip files
+            cd custom_components/homewizard_energy
+            zip -r ../../homewizard_energy.zip .
+            cd ../..
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -30,7 +32,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.release_drafter.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: homewizard_energy.zip
           asset_name: homewizard_energy.zip
           asset_content_type: application/zip
