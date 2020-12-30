@@ -12,7 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Zip Folder
-        run: zip -r homewizard_energy.zip ./custom_components/homewizard_energy
+        run: | # Zip files
+            cd custom_components/homewizard_energy
+            zip -r ../../homewizard_energy.zip .
+            cd ../..
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
