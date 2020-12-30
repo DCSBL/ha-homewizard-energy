@@ -1,34 +1,71 @@
-"""HomeWizard Energy P1 meter integration."""
-
+"""The Homewizard Energy integration."""
+import asyncio
 import logging
 
-import voluptuous
-from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
-from homeassistant.helpers import config_validation
+import voluptuous as vol
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
-from . import const
+from .const import DOMAIN
+from .energydevice import HwEnergyDevice
 
-_LOGGER = logging.getLogger(__name__)
+Logger = logging.getLogger(__name__)
 
-PLATFORM_SCHEMA = config_validation.PLATFORM_SCHEMA.extend(
-    {
-        voluptuous.Required(const.CONF_IP_ADDRESS): config_validation.string,
-        voluptuous.Optional(const.CONF_NAME): config_validation.string,
-    }
-)
+CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
+
+# TODO List the platforms that you want to support.
+# For your initial PR, limit it to 1 platform.
+PLATFORMS = ["sensor"]
 
 
-async def async_setup(hass, config):
-    hass.data[const.DOMAIN] = {}
+async def async_setup(hass: HomeAssistant, config: dict):
+    """Set up the Homewizard Energy component."""
+    Logger.debug("__init__ async_setup")
+    hass.data[DOMAIN] = {}
+
     return True
 
 
-async def async_setup_entry(hass, entry):
-    """Config entry example."""
-    # assuming API object stored here by __init__.py
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Set up Homewizard Energy from a config entry."""
 
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    Logger.debug("__init__ async_setup_entry")
+
+    energydevice = HwEnergyDevice(hass, entry)
+    hass.data[DOMAIN][entry.data["unique_id"]] = energydevice
+
+    for component in PLATFORMS:
+        hass.async_create_task(
+            hass.config_entries.async_forward_entry_setup(entry, component)
+        )
+
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+    """Unload a config entry."""
+    Logger.debug("__init__ async_unload_entry")
+
+    unload_ok = all(
+        await asyncio.gather(
+            *[
+                hass.config_entries.async_forward_entry_unload(entry, component)
+                for component in PLATFORMS
+            ]
+        )
     )
+    Logger.warning(
+        "Unloading component not fully developed, restart Home Assistant to fully unload component"
+    )
+    return False
 
-    return True
+    # if unload_ok:
+    #     Logger.info(hass.data[DOMAIN])
+    #     energydevice = hass.data[DOMAIN].pop(entry.data["unique_id"])
+    #     await energydevice.api.close()
+
+    return unload_ok
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    pass

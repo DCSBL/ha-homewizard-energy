@@ -1,9 +1,10 @@
-"""Constants and common variables for HomeWizard Energy P1 meter."""
+"""Constants for the Homewizard Energy integration."""
 
 from homeassistant import const
 
 # Set up.
 DOMAIN = "homewizard_energy"
+MANUFACTURER_NAME = "HomeWizard"
 PLATFORMS = ["sensor"]
 
 # Platform config.
