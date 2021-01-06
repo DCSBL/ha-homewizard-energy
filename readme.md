@@ -30,10 +30,3 @@ Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p
 
 ## API documentation
 [HomeWizard P1 Meter local API](https://energy.homewizard.net/en/support/solutions/articles/19000117051-homewizard-p1-meter-local-api-beta-)
-
-## Todo's
-Things still to do before it is ready for everyone
-
-* ~Make repository HACS compatible~
-* ~Make polling rate relevant to device~
-* Prepare integration for other HomeWizard Energy devices
