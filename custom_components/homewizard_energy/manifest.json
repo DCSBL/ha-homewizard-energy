@@ -1,9 +1,9 @@
 {
   "domain": "homewizard_energy",
   "name": "HomeWizard Energy",
-  "documentation": "https://github.com/Unsigus/hass-homewizard-energy",
-  "issue_tracker": "https://github.com/Unsigus/hass-homewizard-energy/issues",
-  "codeowners": ["@unsigus"],
+  "documentation": "https://github.com/d-sebel/ha-homewizard-energy",
+  "issue_tracker": "https://github.com/d-sebel/ha-homewizard-energy/issues",
+  "codeowners": ["@unsigus", "@d-sebel"],
   "dependencies": ["zeroconf"],
   "requirements": ["aiohwenergy==0.0.3"],
   "zeroconf": ["_hwenergy._tcp.local."],
