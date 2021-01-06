@@ -33,10 +33,3 @@ Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p
 
 ## Disclaimer
 This integration is not developed, nor supported by HomeWizard.
-
-## Todo's
-Things still to do before it is ready for everyone
-
-* ~Make repository HACS compatible~
-* ~Make polling rate relevant to device~
-* Prepare integration for other HomeWizard Energy devices
