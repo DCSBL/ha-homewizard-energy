@@ -1,4 +1,10 @@
+<!--
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+-->
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![Version](https://img.shields.io/badge/Version-0.5.0-blue.svg)](https://github.com/d-sebel/ha-homewizard-energy)
+[![Actions Status](https://github.com/d-sebel/ha-homewizard-energy/workflows/Create%20release/badge.svg)](https://github.com/d-sebel/ha-homewizard-energy/actions)
+[![Actions Status](https://github.com/d-sebel/ha-homewizard-energy/workflows/Validation%20And%20Formatting/badge.svg)](https://github.com/d-sebel/ha-homewizard-energy/actions)
 
 # HomeWizard Energy P1 Meter
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
@@ -12,18 +18,26 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Installation
 ### HACS (https://hacs.xyz)
-> This is the recommended method
+**This is the recommended method**
+<!--
 * Install this integration from HACS (Search for 'HomeWizard Energy')
 * Restart Home Assistant
+-->
+1. In HACS, go to Interations.
+2. Click the 3 dots in the upper right.
+3. Click 'Custom repositories'.
+4. Add this repository (https://github.com/d-sebel/ha-homewizard-energy), select 'Integration' and click ADD.
+5. Click 'Install' in the 'New repository' card, and install it.
+6. **Restart Home Assistant**.
 
 ### Manually
-* Install the custom component by downloading it and copy it to the custom_components directory as usual.
-* Restart Home Assistant.
+1. Install the custom component by downloading it and copy it to the custom_components directory as usual.
+2. Restart Home Assistant.
 
 ## Usage
-* Go to Configuration > Integrations > and add the 'HomeWizard Energy' integration.
-* Enter the IP address of the P1 meter.
-* Add the sensors you want to view in in your dashboard.
+1. Go to Configuration > Integrations > and add the 'HomeWizard Energy' integration.
+2. Enter the IP address of the P1 meter.
+3. Add the sensors you want to view in in your dashboard.
 
 ## Discussion
 Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p1-dsmr-dongle-homewizard-energy) or the Dutch website [Tweakers (NL)](https://gathering.tweakers.net/forum/list_messages/2002754/last)
