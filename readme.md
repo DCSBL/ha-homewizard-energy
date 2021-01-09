@@ -1,10 +1,9 @@
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
-
-# HomeWizard Energy P1 Meter
+# HomeWizard Energy P1 Meter (Archived version)
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
 
-![HomeWizard Energy Logo](https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/homewizard_energy/icon.png "HomeWizard Energy")
+**This integration has been moved to https://github.com/d-sebel/ha-homewizard-energy**
 
+<!--
 ## Requirements
 * Only the HomeWizard P1 Meter is supported at this moment.
 * Your meter should run firmware 1.48 or higher. Check this in HomeWizard Energy app &#8594; Gear icon &#8594; Meters &#8594; (your meter) &#8594; Software. Contact [HomeWizard Support](https://energy.homewizard.net/nl/support/tickets/new) if this is not the case.
@@ -30,3 +29,4 @@ Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p
 
 ## API documentation
 [HomeWizard P1 Meter local API](https://energy.homewizard.net/en/support/solutions/articles/19000117051-homewizard-p1-meter-local-api-beta-)
+-->
