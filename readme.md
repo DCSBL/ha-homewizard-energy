@@ -13,7 +13,7 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Requirements
 * Only the HomeWizard P1 Meter is supported at this moment.
-* Your meter should run firmware 1.48 or higher. Check this in HomeWizard Energy app &#8594; Gear icon &#8594; Meters &#8594; (your meter) &#8594; Software. Contact [HomeWizard Support](https://energy.homewizard.net/nl/support/tickets/new) if this is not the case.
+* Your meter should run firmware **2.11** or higher. Check this in HomeWizard Energy app &#8594; Gear icon &#8594; Meters &#8594; (your meter) &#8594; Software. Contact [HomeWizard Support](https://energy.homewizard.net/nl/support/tickets/new) if this is not the case.
 * Make sure the HomeWizard Energy P1 Meter has been connected to the same network as your Home Assistant installation and you know the IP address.
 
 ## Installation
