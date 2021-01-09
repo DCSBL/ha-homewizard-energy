@@ -19,7 +19,7 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Installation
 ### HACS (https://hacs.xyz)
-**This is the recommended method**
+**This is the recommended method, release in [HACS defaults](https://github.com/hacs/default) pending**
 <!--
 * Install this integration from HACS (Search for 'HomeWizard Energy')
 * Restart Home Assistant
