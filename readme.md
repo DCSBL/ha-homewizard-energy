@@ -5,6 +5,7 @@
 [![Version](https://img.shields.io/badge/Version-0.5.0-blue.svg)](https://github.com/d-sebel/ha-homewizard-energy)
 [![Actions Status](https://github.com/d-sebel/ha-homewizard-energy/workflows/Create%20release/badge.svg)](https://github.com/d-sebel/ha-homewizard-energy/actions)
 [![Actions Status](https://github.com/d-sebel/ha-homewizard-energy/workflows/Validation%20And%20Formatting/badge.svg)](https://github.com/d-sebel/ha-homewizard-energy/actions)
+[![Actions Status](https://github.com/d-sebel/ha-homewizard-energy/workflows/CodeQL/badge.svg)](https://github.com/d-sebel/ha-homewizard-energy/actions)
 
 # HomeWizard Energy P1 Meter
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
