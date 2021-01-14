@@ -1,7 +1,7 @@
 <!--
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 -->
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 [![Downloads for latest release](https://img.shields.io/github/downloads/DCSBL/ha-homewizard-energy/latest/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/latest)
 [![Version](https://img.shields.io/badge/Version-0.4.2-blue.svg)](https://github.com/d-sebel/ha-homewizard-energy)
 [![Actions Status](https://github.com/d-sebel/ha-homewizard-energy/workflows/Create%20release/badge.svg)](https://github.com/d-sebel/ha-homewizard-energy/actions)
@@ -20,17 +20,11 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Installation
 ### HACS (https://hacs.xyz)
-**This is the recommended method, release in [HACS defaults](https://github.com/hacs/default) pending**
-<!--
-* Install this integration from HACS (Search for 'HomeWizard Energy')
-* Restart Home Assistant
--->
+**This is the recommended method**
 1. In HACS, go to 'integrations'.
-2. Click the 3 dots in the upper right.
-3. Click 'Custom repositories'.
-4. Add this repository (https://github.com/d-sebel/ha-homewizard-energy), select 'Integration' and click ADD.
-5. Click 'Install' in the 'New repository' card, and install it.
-6. **Restart Home Assistant**.
+2. Click 'Explore & add repositories'
+3. Search for 'HomeWizar Energy' and install this integration
+4. **Restart Home Assistant**.
 
 ### Manually
 1. Install the custom component by downloading it and copy it to the custom_components directory as usual.
