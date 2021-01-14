@@ -24,7 +24,7 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 * Install this integration from HACS (Search for 'HomeWizard Energy')
 * Restart Home Assistant
 -->
-1. In HACS, go to Interations.
+1. In HACS, go to 'integrations'.
 2. Click the 3 dots in the upper right.
 3. Click 'Custom repositories'.
 4. Add this repository (https://github.com/d-sebel/ha-homewizard-energy), select 'Integration' and click ADD.
