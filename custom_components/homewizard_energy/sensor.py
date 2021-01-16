@@ -129,7 +129,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         try:
             smr_version = energy_api.data.smr_version
             if smr_version == 50:
-                update_interval = 1
+                update_interval = 10
             else:
                 update_interval = 5
         except AttributeError:
@@ -169,7 +169,7 @@ class device_hwe_p1(CoordinatorEntity):
 
     host = None
     name = None
-    unique_id = None
+    # unique_id = None
     entry_data = None
 
     def __init__(self, coordinator, entry_data, info_type):
@@ -187,7 +187,7 @@ class device_hwe_p1(CoordinatorEntity):
         self.info_type = info_type
         self.coordinator = coordinator
         self.entry_data = entry_data
-        self.unique_id = "%s_%s" % (entry_data["unique_id"], info_type)
+        # self.unique_id = "%s_%s" % (entry_data["unique_id"], info_type)
 
     @property
     def icon(self):

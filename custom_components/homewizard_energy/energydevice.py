@@ -2,12 +2,16 @@
 import asyncio
 import logging
 
+
 import aiohwenergy
 import async_timeout
 import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 from homeassistant.exceptions import ConfigEntryNotReady
+
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import Config, HomeAssistant
 
 from .const import DOMAIN, MANUFACTURER_NAME
 from .errors import AuthenticationRequired, CannotConnect
@@ -18,8 +22,11 @@ Logger = logging.getLogger(__package__)
 class HwEnergyDevice:
     """Manages a single Homewizard Energy device."""
 
-    def __init__(self, hass, config_entry):
+    def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry):
         """Initialize the system."""
+        
+        Logger.info("HwEnergyDevice %s" % config_entry.data["host"])
+        
         self.config_entry = config_entry
         self.hass = hass
         self.api = None  # aiohwenergy instance
