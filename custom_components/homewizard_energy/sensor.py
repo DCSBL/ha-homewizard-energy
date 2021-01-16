@@ -1,7 +1,7 @@
 """Creates Homewizard Energy sensor entities."""
+import asyncio
 import logging
 import sys
-import asyncio
 from datetime import timedelta
 
 import aiohwenergy
@@ -90,7 +90,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
     energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
-    
+
     Logger.debug(entry)
 
     try:
@@ -163,7 +163,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     await coordinator.async_refresh()
 
     # services.register_services(hass)
-    if energy_api.data != None:            
+    if energy_api.data != None:
         async_add_entities(
             device_hwe(coordinator, entry.data, datapoint)
             for datapoint in energy_api.data.available_datapoints
