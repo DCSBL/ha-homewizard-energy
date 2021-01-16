@@ -1,4 +1,5 @@
 """Creates Homewizard Energy sensor entities."""
+import asyncio
 import logging
 import sys
 import asyncio
@@ -90,7 +91,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
     energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
-    
+
     Logger.debug(entry)
 
     try:

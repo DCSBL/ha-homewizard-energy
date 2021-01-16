@@ -3,10 +3,11 @@ import asyncio
 from enum import unique
 import logging
 import re
+from enum import unique
 
-import voluptuous as vol
 import aiohwenergy
 import async_timeout
+import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers import entity_registry
@@ -36,16 +37,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Homewizard Energy from a config entry."""
 
     Logger.debug("__init__ async_setup_entry")
-    
+
     # Migrate manual config to zeroconf (<0.5.0 to 0.5.x)
     # Check if unique_id == ipv4 or ipv6
-    if (re.match("(?:[0-9]{1,3}\.){3}[0-9]{1,3}", entry.unique_id) or
-        re.match("(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))", entry.unique_id)):
+    if re.match("(?:[0-9]{1,3}\.){3}[0-9]{1,3}", entry.unique_id) or re.match(
+        "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))",
+        entry.unique_id,
+    ):
         Logger.info("Converting old integration to new one")
-        
+
         host_ip = entry.unique_id
         api = aiohwenergy.HomeWizardEnergy(host_ip)
-        
         try:
             with async_timeout.timeout(5):
                 await api.initialize()
@@ -63,17 +65,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             return False
         finally:
             await api.close()
-        
-        if (api.device == None):
-            Logger.error("Device (%s) API disabled, enable API and restart integration" % host_ip)
+
+        if api.device == None:
+            Logger.error(
+                "Device (%s) API disabled, enable API and restart integration" % host_ip
+            )
             return False
-          
-        # Update unique_id information  
+
+        # Update unique_id information
         unique_id = "%s_%s" % (
             api.device.product_type,
             api.device.serial,
         )
-        
         # Update device information
         data = entry.data.copy()
         data["host"] = host_ip
@@ -81,13 +84,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         data["custom_name"] = api.device.product_name
         data["unique_id"] = unique_id
         data.pop("ip_address")
-        
+
         hass.config_entries.async_update_entry(entry, data=data, unique_id=unique_id)
-        
+
         # Update entities
         er = await entity_registry.async_get_registry(hass)
         entities = entity_registry.async_entries_for_config_entry(er, entry.entry_id)
-        old_unique_id_prefix = ("p1_meter_%s_" % slugify(host_ip))
+        old_unique_id_prefix = "p1_meter_%s_" % slugify(host_ip)
         for entity in entities:
             new_unique_id_type = entity.unique_id.replace(old_unique_id_prefix, "")
             new_unique_id = "%s_%s" % (unique_id, new_unique_id_type)
