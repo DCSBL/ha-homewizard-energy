@@ -1,4 +1,5 @@
 """Creates Homewizard Energy sensor entities."""
+import asyncio
 import logging
 import sys
 from datetime import timedelta
@@ -88,9 +89,19 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
-    energy_api = aiohwenergy.HomeWizardEnergy(entry.data["host"])
+    energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
 
-    await energy_api.initialize()
+    Logger.debug(entry)
+
+    try:
+        with async_timeout.timeout(5):
+            await energy_api.initialize()
+    except (asyncio.TimeoutError, aiohwenergy.RequestError):
+        Logger.error(
+            "Error initializing Energy device at %s",
+            energy_api._host,
+        )
+        return False
 
     async def async_update_data():
         """Fetch data from API endpoint.
@@ -129,7 +140,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         try:
             smr_version = energy_api.data.smr_version
             if smr_version == 50:
-                update_interval = 10
+                update_interval = 1
             else:
                 update_interval = 5
         except AttributeError:
@@ -154,7 +165,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # services.register_services(hass)
     if energy_api.data != None:
         async_add_entities(
-            device_hwe_p1(coordinator, entry.data, datapoint)
+            device_hwe(coordinator, entry.data, datapoint)
             for datapoint in energy_api.data.available_datapoints
         )
 
@@ -164,12 +175,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
         return False
 
 
-class device_hwe_p1(CoordinatorEntity):
+class device_hwe(CoordinatorEntity):
     """Representation of a HomeWizard Energy"""
 
     host = None
     name = None
-    # unique_id = None
+    unique_id = None
     entry_data = None
 
     def __init__(self, coordinator, entry_data, info_type):
@@ -187,7 +198,7 @@ class device_hwe_p1(CoordinatorEntity):
         self.info_type = info_type
         self.coordinator = coordinator
         self.entry_data = entry_data
-        # self.unique_id = "%s_%s" % (entry_data["unique_id"], info_type)
+        self.unique_id = "%s_%s" % (entry_data["unique_id"], info_type)
 
     @property
     def icon(self):

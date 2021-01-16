@@ -6,6 +6,6 @@
   "codeowners": ["@unsigus", "@DCSBL"],
   "dependencies": ["zeroconf"],
   "requirements": ["aiohwenergy==0.0.5"],
-  "zeroconf": ["_hwene3rgy._tcp.local."],
+  "zeroconf": ["_hwenergy._tcp.local."],
   "config_flow": true
 }
