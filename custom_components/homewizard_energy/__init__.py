@@ -14,7 +14,6 @@ from homeassistant.helpers import entity_registry
 from homeassistant.util import slugify
 
 from .const import DOMAIN
-from .energydevice import HwEnergyDevice
 
 Logger = logging.getLogger(__name__)
 
@@ -92,7 +91,7 @@ async def migrate_old_configuration(hass: HomeAssistant, entry: ConfigEntry):
 
     hass.config_entries.async_update_entry(entry, data=data, unique_id=unique_id)
     
-    
+    return True
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Homewizard Energy from a config entry."""
@@ -105,10 +104,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))",
         entry.unique_id,
     ):
-        await migrate_old_configuration(hass, entry)
+        result = await migrate_old_configuration(hass, entry)
+        if not result:
+            return False
 
-    energydevice = HwEnergyDevice(hass, entry)
-    hass.data[DOMAIN][entry.data["unique_id"]] = energydevice
+    energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
+    hass.data[DOMAIN][entry.data["unique_id"]] = energy_api
     
     for component in PLATFORMS:
         hass.async_create_task(
@@ -130,14 +131,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
             ]
         )
     )
-    
-    print(entry)
 
-    # if unload_ok:
-    #     Logger.info(hass.data[DOMAIN])
-    #     Logger.warning(hass.data[DOMAIN])
-    #     energydevice = hass.data[DOMAIN].pop(entry.data["unique_id"])
-    #     await energydevice.api.close()
+    if unload_ok:
+        energy_api = hass.data[DOMAIN].pop(entry.data["unique_id"])
+        await energy_api.close()
 
     return unload_ok
 

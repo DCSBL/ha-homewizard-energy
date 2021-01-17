@@ -18,6 +18,8 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
+from homeassistant.exceptions import ConfigEntryNotReady
+
 from . import const
 
 Logger = logging.getLogger(__name__)
@@ -90,26 +92,38 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
-    energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
+    energy_api = hass.data[const.DOMAIN][entry.data["unique_id"]]
 
-    Logger.debug(entry)
-
+    initialized = False
     try:
-        with async_timeout.timeout(5):
+        with async_timeout.timeout(10):
             await energy_api.initialize()
+            initialized = True
+            
     except (asyncio.TimeoutError, aiohwenergy.RequestError):
         Logger.error(
-            "Error initializing Energy device at %s",
+            "Error connecting to the Energy device at %s",
             energy_api._host,
         )
+        raise ConfigEntryNotReady
+        
+    except aiohwenergy.AioHwEnergyException:
+        Logger.exception("Unknown Energy API error occurred")
+        raise ConfigEntryNotReady
+        
+    except Exception:  # pylint: disable=broad-except
+        Logger.exception(
+            "Unknown error connecting with Energy Device at %s",
+            energy_api._host["host"],
+        )
         return False
+        
+    finally:
+        if not initialized:
+            await energy_api.close()
 
     async def async_update_data():
-        """Fetch data from API endpoint.
-
-        This is the place to pre-process the data to lookup tables
-        so entities can quickly look up their data.
-        """
+        """Fetch data from API endpoint."""
         data = {}
         async with async_timeout.timeout(10):
             try:
@@ -163,7 +177,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Fetch initial data so we have data when entities subscribe
     await coordinator.async_refresh()
 
-    # services.register_services(hass)
     if energy_api.data != None: 
         entities = []
         for datapoint in energy_api.data.available_datapoints:
@@ -193,9 +206,6 @@ class device_hwe(CoordinatorEntity):
 
         # Config attributes.
         self.name = "%s %s" % (entry_data["custom_name"], SENSORS[info_type]["name"])
-
-        # self.energydevice = energydevice
-        # energydevice.entity = self
 
         self.host = entry_data["host"]
         self.info_type = info_type
