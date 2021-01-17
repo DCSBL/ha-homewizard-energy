@@ -2,7 +2,6 @@
 import asyncio
 import logging
 import sys
-import asyncio
 from datetime import timedelta
 
 import aiohwenergy

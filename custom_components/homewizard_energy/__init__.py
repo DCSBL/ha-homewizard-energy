@@ -1,6 +1,5 @@
 """The Homewizard Energy integration."""
 import asyncio
-from enum import unique
 import logging
 import re
 from enum import unique
