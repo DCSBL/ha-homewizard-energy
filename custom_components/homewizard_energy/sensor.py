@@ -164,10 +164,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
     await coordinator.async_refresh()
 
     # services.register_services(hass)
-    if energy_api.data != None:            
+    if energy_api.data != None: 
+        entities = []
+        for datapoint in energy_api.data.available_datapoints:
+            entities.append(device_hwe(coordinator, entry.data, datapoint))  
         async_add_entities(
-            device_hwe(coordinator, entry.data, datapoint)
-            for datapoint in energy_api.data.available_datapoints
+            entities, update_before_add=True
         )
 
         return True
