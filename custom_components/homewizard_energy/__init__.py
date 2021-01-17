@@ -30,6 +30,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
     return True
 
+
 async def migrate_old_configuration(hass: HomeAssistant, entry: ConfigEntry):
     """
     Migrates 0.4.x configuration, where unique_id was based on IP to
@@ -68,18 +69,18 @@ async def migrate_old_configuration(hass: HomeAssistant, entry: ConfigEntry):
         api.device.product_type,
         api.device.serial,
     )
-    
+
     # Update entities
     er = await entity_registry.async_get_registry(hass)
     entities = entity_registry.async_entries_for_config_entry(er, entry.entry_id)
     old_unique_id_prefix = "p1_meter_%s_" % slugify(host_ip)
-    
+
     for entity in entities:
         new_unique_id_type = entity.unique_id.replace(old_unique_id_prefix, "")
         new_unique_id = "%s_%s" % (unique_id, new_unique_id_type)
         Logger.debug("Changing %s to %s" % (entity.unique_id, new_unique_id))
         er.async_update_entity(entity.entity_id, new_unique_id=new_unique_id)
-        
+
     # Update device information
     data = entry.data.copy()
     data["host"] = host_ip
@@ -89,8 +90,9 @@ async def migrate_old_configuration(hass: HomeAssistant, entry: ConfigEntry):
     data.pop("ip_address")
 
     hass.config_entries.async_update_entry(entry, data=data, unique_id=unique_id)
-    
+
     return True
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Homewizard Energy from a config entry."""
@@ -109,7 +111,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
     hass.data[DOMAIN][entry.data["unique_id"]] = energy_api
-    
     for component in PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, component)

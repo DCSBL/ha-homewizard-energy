@@ -12,12 +12,11 @@ from homeassistant.const import (
     POWER_WATT,
     VOLUME_CUBIC_METERS,
 )
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
 )
-
-from homeassistant.exceptions import ConfigEntryNotReady
 
 from . import const
 
@@ -98,25 +97,25 @@ async def async_setup_entry(hass, entry, async_add_entities):
         with async_timeout.timeout(10):
             await energy_api.initialize()
             initialized = True
-            
+
     except (asyncio.TimeoutError, aiohwenergy.RequestError):
         Logger.error(
             "Error connecting to the Energy device at %s",
             energy_api._host,
         )
         raise ConfigEntryNotReady
-        
+
     except aiohwenergy.AioHwEnergyException:
         Logger.exception("Unknown Energy API error occurred")
         raise ConfigEntryNotReady
-        
+
     except Exception:  # pylint: disable=broad-except
         Logger.exception(
             "Unknown error connecting with Energy Device at %s",
             energy_api._host["host"],
         )
         return False
-        
+
     finally:
         if not initialized:
             await energy_api.close()
@@ -176,13 +175,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
     # Fetch initial data so we have data when entities subscribe
     await coordinator.async_refresh()
 
-    if energy_api.data != None: 
+    if energy_api.data != None:
         entities = []
         for datapoint in energy_api.data.available_datapoints:
-            entities.append(device_hwe(coordinator, entry.data, datapoint))  
-        async_add_entities(
-            entities, update_before_add=True
-        )
+            entities.append(device_hwe(coordinator, entry.data, datapoint))
+        async_add_entities(entities, update_before_add=True)
 
         return True
     else:
