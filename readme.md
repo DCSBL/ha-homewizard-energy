@@ -5,7 +5,7 @@
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/CodeQL/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
 <!--[![Downloads for latest release](https://img.shields.io/github/downloads/DCSBL/ha-homewizard-energy/latest/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/latest)-->
 
-> :exclamation: You most likely see this action due to a bug in HACS. This will hopefully be fixed soon. See [hacs#1797](https://github.com/hacs/integration/issues/1797).
+> :exclamation: You most likely see this integration due to a bug in HACS. This will hopefully be fixed soon. See [hacs#1797](https://github.com/hacs/integration/issues/1797).
 
 # HomeWizard Energy P1 Meter
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
