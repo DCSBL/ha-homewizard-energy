@@ -1,9 +1,11 @@
+> :exclamation: You most likely see this action due to a bug in HACS. This will hopefully be fixed soon. See [hacs#1797](https://github.com/hacs/integration/issues/1797).
+
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-<!--[![Downloads for latest release](https://img.shields.io/github/downloads/DCSBL/ha-homewizard-energy/latest/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/latest)-->
 [![Version](https://img.shields.io/badge/Version-0.4.2-blue.svg)](https://github.com/DCSBL/ha-homewizard-energy)
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/Create%20release/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/Validation%20And%20Formatting/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/CodeQL/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
+<!--[![Downloads for latest release](https://img.shields.io/github/downloads/DCSBL/ha-homewizard-energy/latest/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/latest)-->
 
 # HomeWizard Energy P1 Meter
 Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.nl/energie).
