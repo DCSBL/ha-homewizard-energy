@@ -1,7 +1,7 @@
 {
   "domain": "homewizard_energy",
   "name": "HomeWizard Energy",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "documentation": "https://github.com/Unsigus/hass-homewizard-energy",
   "dependencies": [],
   "codeowners": ["@unsigus", "@DCSBL"],
