@@ -14,7 +14,7 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Requirements
 * Only the HomeWizard P1 Meter is supported at this moment.
-* Your meter should run firmware **2.11** or higher. Check this in HomeWizard Energy app &#8594; Gear icon &#8594; Meters &#8594; (your meter) &#8594; Software. Contact [HomeWizard Support](https://energy.homewizard.net/nl/support/tickets/new) if this is not the case.
+* Your meter should run firmware '2.11' or higher. Check this in HomeWizard Energy app &#8594; Gear icon &#8594; Meters &#8594; (your meter) &#8594; Software. Contact [HomeWizard Support](https://energy.homewizard.net/nl/support/tickets/new) if this is not the case.
 * Make sure the HomeWizard Energy P1 Meter has been connected to the same network as your Home Assistant installation and you know the IP address.
 
 ## Installation
@@ -42,6 +42,18 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 
 ## Discussion
 Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p1-dsmr-dongle-homewizard-energy) or the Dutch website [Tweakers (NL)](https://gathering.tweakers.net/forum/list_messages/2002754/last)
+
+## Frequent questions and issues
+1. **I get a 'connection refused' error when trying to connect to `http://<ip_address>/api/v1/data`**
+Your device is not at firmware version '2.11' or higher. You can see this in the HomeWizard Energy app under 'Meters'. Your device should update within an hour after connecting it to the internet. If your device doesn't, contact HomeWizard Support.
+2. **I have entered an IP address in the setup, but there is no data**
+See #1
+3. **I can't see the intergration from `Configuration > Integrations`**
+Restart your HA installation. This loads the integration. If you still have issues, you can try installing 0.5.0 (currently in beta). This version has a new way of loading the integration.
+4. **Is the HomeWizard Wi-Fi kWh meter supported?**
+When the API is released for the kWh meter, this integration will support it.
+5. **Can I see the daily/weekly/montly usage and history with this integration?**
+No. This integration is only for retreiving the data and making it available in Home Assistant. But you can create this feature yourself. [There](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441) [are](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/87) [some](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/114) [great](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/52) [examples](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/78).
 
 ## API documentation
 [HomeWizard P1 Meter local API](https://energy.homewizard.net/en/support/solutions/articles/19000117051-homewizard-p1-meter-local-api-beta-)
