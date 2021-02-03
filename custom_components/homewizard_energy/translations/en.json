@@ -4,8 +4,8 @@
         "abort": {
             "no_devices_found": "No devices found on the network",
             "single_instance_allowed": "Already configured. Only a single configuration possible.",
-            "api_not_enabled": "API not enabled, please enable API in the HomeWizard Energy app under settings",
-            "manual_not_supported": "Manual configuration not supported, please check if 'Discovery' is active and mDNS is turned on in your router"
+            "api_not_enabled": "Device API not activated.",
+            "manual_not_supported": "Manual configuration not supported, please check if 'Discovery' is active and mDNS is turned on in your router."
         },
         "step": {
             "discovery_confirm": {
