@@ -66,7 +66,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             # return self.async_abort(reason="device_not_supported")
 
         if entry_info["api_enabled"] != "1":
-            Logger.warning("API not enabled, please enable API in app")
+            # Logger.warning("API not enabled, please enable API in app")
             return self.async_abort(reason="api_not_enabled")
 
         Logger.debug(f"entry_info: {entry_info}")
