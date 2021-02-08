@@ -1,0 +1,49 @@
+name-template: '$RESOLVED_VERSION'
+tag-template: '$RESOLVED_VERSION'
+change-template: '- #$NUMBER $TITLE @$AUTHOR'
+sort-direction: ascending
+categories:
+  - title: 'Breaking changes'
+    label: 'Breaking Change'
+
+  - title: 'New features'
+    label: 'pr: new-feature'
+
+  - title: 'Enhancements'
+    label: 'pr: enhancement'
+
+  - title: 'Refactor'
+    label: 'pr: refactor'
+
+  - title: 'Bug Fixes'
+    label: 'pr: bugfix'
+
+include-labels:
+  - 'Breaking Change'
+  - 'pr: enhancement'
+  - 'pr: new-feature'
+  - 'pr: bugfix'
+  - 'pr: refactor'
+
+version-resolver:
+  minor:
+    labels:
+      - 'Breaking Change'
+      - 'pr: enhancement'
+      - 'pr: dependency-update'
+      - 'pr: new-feature'
+  patch:
+    labels:
+      - 'pr: bugfix'
+  default: minor
+
+template: |
+  [![Downloads for this release](https://img.shields.io/github/downloads/hacs/integration/$RESOLVED_VERSION/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/$RESOLVED_VERSION)
+
+  $CHANGES
+
+  ## Links
+
+  - [HA Integration forum](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441)
+  - [Tweakers forum](https://gathering.tweakers.net/forum/list_messages/2002754/last)
+  - [Product page](https://www.homewizard.nl/energy)
