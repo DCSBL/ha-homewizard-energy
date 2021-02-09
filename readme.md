@@ -43,11 +43,9 @@ Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p
 This is a known issue. Please restart your Home Assistant again. That should solve it for you.
 2. **I get a 'connection refused' error when trying to connect to `http://<ip_address>/api/v1/data`**
 Your device is not at firmware version '2.11' or higher. You can see this in the HomeWizard Energy app under 'Meters'. Your device should update within an hour after connecting it to the internet. If your device doesn't, contact HomeWizard Support. Also, currently only the HomeWizard P1 meter is supported, not the kWh meter.
-3. **I can't see the intergration from `Configuration > Integrations`**
-Restart your HA installation. This loads the integration. If you still have issues, you can try installing 0.5.0 (currently in beta). This version has a new way of loading the integration.
-4. **Is the HomeWizard Wi-Fi kWh meter supported?**
+3. **Is the HomeWizard Wi-Fi kWh meter supported?**
 No, but when the API is released for the kWh meter, this integration will support it.
-5. **Can I see the daily/weekly/montly usage and history with this integration?**
+4. **Can I see the daily/weekly/montly usage and history with this integration?**
 No. This integration is only for retreiving the data and making it available in Home Assistant. But you can create this feature yourself. [There](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441) [are](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/87) [some](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/114) [great](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/52) [examples](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/78).
 
 ## API documentation
