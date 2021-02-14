@@ -85,20 +85,21 @@ SENSORS = {
     },
 }
 
+
 def get_update_interval(entry, energy_api):
-    
+
     if entry.options.get(
         const.CONF_OVERRIDE_POLL_INTERVAL, const.DEFAULT_OVERRIDE_POLL_INTERVAL
     ):
         return entry.options.get(
             const.CONF_POLL_INTERVAL_SECONDS, const.DEFAULT_POLL_INTERVAL_SECONDS
         )
-    
+
     try:
         product_type = energy_api.device.product_type
     except AttributeError:
         product_type = "Unknown"
-        
+
     if product_type == "HWE-P1":
         try:
             smr_version = energy_api.data.smr_version
@@ -111,8 +112,9 @@ def get_update_interval(entry, energy_api):
 
     elif product_type == "SDM230-wifi" or product_type == "SDM630-wifi":
         return 1
-        
+
     return 10
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
@@ -168,7 +170,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             finally:
                 return data
 
-    # Determine update interval        
+    # Determine update interval
     update_interval = get_update_interval(entry, energy_api)
 
     coordinator = DataUpdateCoordinator(
