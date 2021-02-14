@@ -1,24 +1,40 @@
 """Config flow for Homewizard Energy."""
 import logging
-
 from typing import Any, Dict, Optional
 
+<<<<<<< HEAD
+from typing import Any, Dict, Optional
+
+=======
+import voluptuous as vol
+>>>>>>> a63eb54d3591b96b6ab62480c36724e493342728
 from aiohwenergy.hwenergy import SUPPORTED_DEVICES
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_flow
 from homeassistant.helpers import config_validation as cv
+<<<<<<< HEAD
 
 import voluptuous as vol
+=======
+>>>>>>> a63eb54d3591b96b6ab62480c36724e493342728
 from voluptuous import All, Length, Required, Schema
 from voluptuous.util import Lower
 
 from .const import (
+<<<<<<< HEAD
     DOMAIN,
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
     DEFAULT_POLL_INTERVAL_SECONDS
+=======
+    CONF_OVERRIDE_POLL_INTERVAL,
+    CONF_POLL_INTERVAL_SECONDS,
+    DEFAULT_OVERRIDE_POLL_INTERVAL,
+    DEFAULT_POLL_INTERVAL_SECONDS,
+    DOMAIN,
+>>>>>>> a63eb54d3591b96b6ab62480c36724e493342728
 )
 
 Logger = logging.getLogger(__name__)
@@ -30,6 +46,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
     
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return HWEnergyConfigFLowHandler(config_entry)
+
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
@@ -201,11 +223,10 @@ class HWEnergyConfigFLowHandler(config_entries.OptionsFlow):
                     ): bool,
                     vol.Required(
                         CONF_POLL_INTERVAL_SECONDS,
-                        default=self.config_entry.options.get(CONF_POLL_INTERVAL_SECONDS, DEFAULT_POLL_INTERVAL_SECONDS),
-                    ): vol.All(
-                        cv.positive_int,
-                        vol.Range(min=1)
-                    ),
+                        default=self.config_entry.options.get(
+                            CONF_POLL_INTERVAL_SECONDS, DEFAULT_POLL_INTERVAL_SECONDS
+                        ),
+                    ): vol.All(cv.positive_int, vol.Range(min=1)),
                 }
             ),
         )
