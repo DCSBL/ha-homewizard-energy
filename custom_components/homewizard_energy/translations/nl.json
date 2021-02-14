@@ -10,7 +10,7 @@
         },
         "step": {
             "discovery_confirm": {
-                "description": "Naam van apparaat {name}:"
+                "description": "Geef een naam aan je apparaat:"
             }
         }
     },
@@ -19,7 +19,7 @@
             "init": {
                 "data": {
                     "override_poll_interval": "Gebruik eigen update frequentie",
-                    "poll_interval_seconds": "Update frequentie (seconde)"
+                    "poll_interval_seconds": "Update frequentie (in seconden)"
                 }
             }
         }
