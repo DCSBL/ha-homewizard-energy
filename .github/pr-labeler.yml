@@ -1,0 +1,4 @@
+'pr: bugfix': ['bugfix/*', 'fix/*']
+'pr: enhancement': enhancement/*
+'pr: refactor': refactor/*
+'pr: new-feature': ['feature/*', 'new-feature/*']
