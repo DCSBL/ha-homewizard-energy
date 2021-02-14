@@ -29,13 +29,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry):
         """Get the options flow for this handler."""
-        return HWEnergyConfigFLowHandler(config_entry)
-
-    @staticmethod
-    @callback
-    def async_get_options_flow(config_entry):
-        """Get the options flow for this handler."""
-        return HWEnergyConfigFLowHandler(config_entry)
+        return HWEnergyConfigFlowHandler(config_entry)
 
     def __init__(self):
         """Set up the instance."""
@@ -176,7 +170,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data=self.context,
             )
 
-class HWEnergyConfigFLowHandler(config_entries.OptionsFlow):
+class HWEnergyConfigFlowHandler(config_entries.OptionsFlow):
     """Handle options."""
 
     def __init__(self, config_entry):
