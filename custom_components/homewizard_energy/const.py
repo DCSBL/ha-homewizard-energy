@@ -34,3 +34,11 @@ ATTR_GAS_TIMESTAMP = "gas_timestamp"
 # Default values.
 DEFAULT_STR_VALUE = "undefined"
 DEVICE_DEFAULT_NAME = "P1 Meter"
+
+
+# Config
+CONF_OVERRIDE_POLL_INTERVAL = "override_poll_interval"
+DEFAULT_OVERRIDE_POLL_INTERVAL = False
+
+CONF_POLL_INTERVAL_SECONDS = "poll_interval_seconds"
+DEFAULT_POLL_INTERVAL_SECONDS = 10
