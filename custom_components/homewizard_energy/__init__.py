@@ -18,6 +18,9 @@ from .const import (
     CONF_POLL_INTERVAL_SECONDS,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
     DEFAULT_POLL_INTERVAL_SECONDS,
+    
+    CONF_API,
+    CONF_UNLOAD_CB
 )
 
 Logger = logging.getLogger(__name__)
@@ -104,6 +107,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up Homewizard Energy from a config entry."""
 
     Logger.debug("__init__ async_setup_entry")
+    
+    hass.data[DOMAIN][entry.data["unique_id"]] = {}
 
     # Migrate manual config to zeroconf (<0.5.0 to 0.5.x)
     # Check if unique_id == ipv4 or ipv6
@@ -114,9 +119,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         result = await migrate_old_configuration(hass, entry)
         if not result:
             return False
+    
+    hass.data[DOMAIN][entry.data["unique_id"]][CONF_UNLOAD_CB] = entry.add_update_listener(async_entry_updated)
 
     energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
-    hass.data[DOMAIN][entry.data["unique_id"]] = energy_api
+    hass.data[DOMAIN][entry.data["unique_id"]][CONF_API] = energy_api
     for component in PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, component)
@@ -124,7 +131,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     return True
 
-
+async def async_entry_updated(hass, config_entry):
+    """Handle entry updates."""
+    Logger.info("Configuration changed, reloading...")
+    await hass.config_entries.async_reload(config_entry.entry_id)
+    
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
     Logger.debug("__init__ async_unload_entry")
@@ -139,8 +150,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
 
     if unload_ok:
-        energy_api = hass.data[DOMAIN].pop(entry.data["unique_id"])
-        await energy_api.close()
+        config_data = hass.data[DOMAIN].pop(entry.data["unique_id"])
+        if ("api" in config_data):
+            energy_api = config_data[CONF_API]
+            await energy_api.close()
+        
+        if (CONF_UNLOAD_CB in config_data):
+            unload_cb = config_data[CONF_UNLOAD_CB]
+            unload_cb()
 
     return unload_ok
 

@@ -12,6 +12,9 @@ CONF_ENTITY_ID = const.CONF_ENTITY_ID
 CONF_IP_ADDRESS = const.CONF_IP_ADDRESS
 CONF_NAME = const.CONF_NAME
 
+CONF_API = "api"
+CONF_UNLOAD_CB = "unload_unsub"
+
 # Services.
 SERVICE_UPDATE = "update"
 

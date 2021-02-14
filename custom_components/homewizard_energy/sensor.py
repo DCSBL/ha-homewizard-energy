@@ -118,7 +118,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
-    energy_api = hass.data[const.DOMAIN][entry.data["unique_id"]]
+    energy_api = hass.data[const.DOMAIN][entry.data["unique_id"]][const.CONF_API]
 
     initialized = False
     try:
