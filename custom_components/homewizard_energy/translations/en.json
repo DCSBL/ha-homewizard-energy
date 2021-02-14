@@ -18,7 +18,7 @@
         "step": {
             "init": {
                 "data": {
-                    "override_poll_interval": "Override poll interval",
+                    "override_poll_interval": "Override default poll interval",
                     "poll_interval_seconds": "Poll interval (seconds)"
                 }
             }
