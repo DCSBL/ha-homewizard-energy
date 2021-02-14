@@ -2,39 +2,18 @@
 import logging
 from typing import Any, Dict, Optional
 
-<<<<<<< HEAD
-from typing import Any, Dict, Optional
-
-=======
 import voluptuous as vol
->>>>>>> a63eb54d3591b96b6ab62480c36724e493342728
 from aiohwenergy.hwenergy import SUPPORTED_DEVICES
 from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_flow
 from homeassistant.helpers import config_validation as cv
-<<<<<<< HEAD
-
-import voluptuous as vol
-=======
->>>>>>> a63eb54d3591b96b6ab62480c36724e493342728
-from voluptuous import All, Length, Required, Schema
-from voluptuous.util import Lower
-
 from .const import (
-<<<<<<< HEAD
-    DOMAIN,
-    CONF_OVERRIDE_POLL_INTERVAL,
-    CONF_POLL_INTERVAL_SECONDS,
-    DEFAULT_OVERRIDE_POLL_INTERVAL,
-    DEFAULT_POLL_INTERVAL_SECONDS
-=======
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
     DEFAULT_POLL_INTERVAL_SECONDS,
     DOMAIN,
->>>>>>> a63eb54d3591b96b6ab62480c36724e493342728
 )
 
 Logger = logging.getLogger(__name__)

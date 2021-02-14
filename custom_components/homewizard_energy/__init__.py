@@ -121,16 +121,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(entry, component)
         )
-        
-    if (CONF_OVERRIDE_POLL_INTERVAL not in entry.options
-        or CONF_POLL_INTERVAL_SECONDS not in entry.options
-    ):
-        options = {
-            **entry.options,
-            CONF_OVERRIDE_POLL_INTERVAL: DEFAULT_OVERRIDE_POLL_INTERVAL,
-            CONF_POLL_INTERVAL_SECONDS: DEFAULT_POLL_INTERVAL_SECONDS,
-        }
-        hass.config_entries.async_update_entry(entry, options=options)
 
     return True
 
