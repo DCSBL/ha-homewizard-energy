@@ -38,7 +38,7 @@ version-resolver:
   default: minor
 
 template: |
-  [![Downloads for this release](https://img.shields.io/github/downloads/hacs/integration/$RESOLVED_VERSION/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/$RESOLVED_VERSION)
+  [![Downloads for this release](https://img.shields.io/github/downloads/DCSBL/ha-homewizard-energy/$RESOLVED_VERSION/total.svg)](https://github.com/DCSBL/ha-homewizard-energy/releases/$RESOLVED_VERSION)
 
   $CHANGES
 
