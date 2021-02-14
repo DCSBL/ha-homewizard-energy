@@ -86,11 +86,41 @@ SENSORS = {
 }
 
 
+def get_update_interval(entry, energy_api):
+
+    if entry.options.get(
+        const.CONF_OVERRIDE_POLL_INTERVAL, const.DEFAULT_OVERRIDE_POLL_INTERVAL
+    ):
+        return entry.options.get(
+            const.CONF_POLL_INTERVAL_SECONDS, const.DEFAULT_POLL_INTERVAL_SECONDS
+        )
+
+    try:
+        product_type = energy_api.device.product_type
+    except AttributeError:
+        product_type = "Unknown"
+
+    if product_type == "HWE-P1":
+        try:
+            smr_version = energy_api.data.smr_version
+            if smr_version == 50:
+                return 1
+            else:
+                return 5
+        except AttributeError:
+            pass
+
+    elif product_type == "SDM230-wifi" or product_type == "SDM630-wifi":
+        return 1
+
+    return 10
+
+
 async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
-    energy_api = hass.data[const.DOMAIN][entry.data["unique_id"]]
+    energy_api = hass.data[const.DOMAIN][entry.data["unique_id"]][const.CONF_API]
 
     initialized = False
     try:
@@ -141,26 +171,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 return data
 
     # Determine update interval
-    ## Default update interval
-    update_interval = 5
-
-    try:
-        product_type = energy_api.device.product_type
-    except AttributeError:
-        product_type = "Unknown"
-
-    if product_type == "HWE-P1":
-        try:
-            smr_version = energy_api.data.smr_version
-            if smr_version == 50:
-                update_interval = 1
-            else:
-                update_interval = 5
-        except AttributeError:
-            pass
-
-    if product_type == "SDM230-wifi" or product_type == "SDM630-wifi":
-        update_interval = 1
+    update_interval = get_update_interval(entry, energy_api)
 
     coordinator = DataUpdateCoordinator(
         hass,
