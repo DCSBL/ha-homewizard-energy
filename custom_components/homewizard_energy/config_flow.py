@@ -1,5 +1,7 @@
 """Config flow for Homewizard Energy."""
 import logging
+import asyncio
+
 from typing import Any, Dict, Optional
 
 import voluptuous as vol
@@ -8,10 +10,15 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_flow
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.typing import ConfigType
 from voluptuous import All, Length, Required, Schema
 from voluptuous.util import Lower
 
+import aiohwenergy
+import async_timeout
+
 from .const import (
+    CONF_IP_ADDRESS,
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
@@ -20,7 +27,6 @@ from .const import (
 )
 
 Logger = logging.getLogger(__name__)
-
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for P1 meter."""
@@ -37,11 +43,79 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Set up the instance."""
         Logger.debug("config_flow __init__")
+        
+    async def async_step_user(
+        self, user_input: Optional[ConfigType] = None
+    ) -> Dict[str, Any]:
+        """Handle a flow initiated by the user."""
+        if user_input is None:
+            return self._show_setup_form()
+        
+        # Check if data is IP (Volup?)
+        
+        # Make connection with device
+        energy_api = aiohwenergy.HomeWizardEnergy(user_input[CONF_IP_ADDRESS])
+        
+        initialized = False
+        try:
+            with async_timeout.timeout(10):
+                await energy_api.initialize()
+                if (energy_api.device != None):
+                    initialized = True
+        except (asyncio.TimeoutError, aiohwenergy.RequestError):
+            Logger.error(
+                "Error connecting to the Energy device at %s",
+                energy_api._host,
+            )
+            return self.async_abort(reason="manual_config_request_error")
 
-    async def async_step_user(self, user_input=None):
-        """Handle a flow initialized by the user."""
-        Logger.debug("config_flow async_step_user")
-        return self.async_abort(reason="manual_not_supported")
+        except aiohwenergy.AioHwEnergyException:
+            Logger.exception("Unknown Energy API error occurred")
+            return self.async_abort(reason="manual_config_unknown_error")
+
+        except Exception:  # pylint: disable=broad-except
+            Logger.exception(
+                "Unknown error connecting with Energy Device at %s",
+                energy_api._host["host"],
+            )
+            return self.async_abort(reason="manual_config_unknown_error")
+        
+        finally:
+            await energy_api.close()
+            
+        if not initialized:
+            return self.async_abort(reason="manual_config_unknown_error")
+            
+        # Validate metadata
+        if (energy_api.device.api_version != "v1"):
+            return self.async_abort(reason="manual_config_unsupported_api_version")      
+        
+        # Configure device
+        entry_info = {
+            "host": user_input[CONF_IP_ADDRESS],
+            "port": 80,
+            "api_enabled": "1",
+            "path": "/api/v1",
+            "product_name": energy_api.device.product_name,
+            "product_type": energy_api.device.product_type,
+            "serial": energy_api.device.serial,
+        }
+        
+        Logger.debug(entry_info)
+        
+        return await self.async_step_check(entry_info)
+
+    def _show_setup_form(self, errors: Optional[Dict] = None) -> Dict[str, Any]:
+        """Show the setup form to the user."""
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_IP_ADDRESS): str,
+                }
+            ),
+            errors=errors or {},
+        )
 
     async def async_step_zeroconf(self, discovery_info):
         """Handle zeroconf discovery."""
@@ -98,7 +172,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         ):
             Logger.warning(f"Invalid discovery parameters")
             return self.async_abort(reason="invalid_discovery_parameters")
-
+        
         self.context["host"] = entry_info["host"]
         self.context["unique_id"] = "%s_%s" % (
             entry_info["product_type"],
@@ -110,15 +184,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self.context["product_name"] = entry_info["product_name"]
         self.context["product_type"] = entry_info["product_type"]
         self.context["api_enabled"] = entry_info["api_enabled"]
-
+        
         self.context["name"] = "%s (%s)" % (
             self.context["product_name"],
             self.context["serial"][-6:],
         )
 
         await self.async_set_unique_id(self.context["unique_id"])
-        self._abort_if_unique_id_configured(updates=entry_info)
-
+        self._abort_if_unique_id_configured(updates=entry_info) 
+        
         self.context["title_placeholders"] = {
             "name": self.context["name"],
             "unique_id": self.context["unique_id"],
