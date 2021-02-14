@@ -4,7 +4,7 @@
   "version": "0.7.0",
   "documentation": "https://github.com/DCSBL/ha-homewizard-energy",
   "issue_tracker": "https://github.com/DCSBL/ha-homewizard-energy/issues",
-  "codeowners": ["@unsigus", "@DCSBL"],
+  "codeowners": ["@DCSBL"],
   "dependencies": ["zeroconf"],
   "requirements": ["aiohwenergy==0.0.5"],
   "zeroconf": ["_hwenergy._tcp.local."],
