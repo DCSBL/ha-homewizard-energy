@@ -22,16 +22,25 @@ Custom integration for the [HomeWizard Energy P1 Meter](https://www.homewizard.n
 1. Install this integration from HACS (Search for 'HomeWizard Energy').
 2. **Restart Home Assistant**.
 
-### Manually
+### Manual installation
 1. Download the zip `homewizard_energy.zip` from the [latest release](https://github.com/DCSBL/ha-homewizard-energy/releases/latest)
 2. Extract this zip in `config/custom_components`. (The config folder where configuration.yaml can be found)
 3. **Restart Home Assistant**.
 
 ## Usage
 1. Go to Configuration > Integrations.
-2. Home Assistant should tell you that a new device has been 'discovered'
+2. Home Assistant should tell you that a new device has been 'discovered'. (if not, please read 'manual configuration')
 3. Press configure to add this device, and give it a name if you want.
 4. :tada:
+
+### Manual configuration
+If Home Assistant can't automaticly find your P1 meter, please check the follow these points:
+1. Is your meter at at least firmware 2.11 or higher?
+2. Is mDNS turned on in your router?
+
+If both are true, you can try to install your meter manually. 
+1. Go to Configuration > Integrations > Add integration > search for 'HomeWizard Energy'.
+2. Enter the IP address from your meter (eg. `192.168.1.107`).
 
 ## Discussion
 Please join us at [the HASS forum](https://community.home-assistant.io/t/wi-fi-p1-dsmr-dongle-homewizard-energy) or the Dutch website [Tweakers (NL)](https://gathering.tweakers.net/forum/list_messages/2002754/last)
