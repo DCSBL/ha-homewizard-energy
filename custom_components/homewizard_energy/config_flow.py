@@ -211,7 +211,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         schema = Schema(
             {
                 Required("name", default=self.context["product_name"]): All(
-                    str, Length(min=1, max=20)
+                    str, Length(min=1)
                 )
             }
         )
