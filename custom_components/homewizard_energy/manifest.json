@@ -8,5 +8,6 @@
   "dependencies": ["zeroconf"],
   "requirements": ["aiohwenergy==0.0.5"],
   "zeroconf": ["_hwenergy._tcp.local."],
-  "config_flow": true
+  "config_flow": true,
+  "iot_class": "local_polling"
 }
