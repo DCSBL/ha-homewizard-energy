@@ -55,7 +55,7 @@ Yes, since 2021-06-03. YOu have to enable the API in the HomeWizard Energy app.
 No. This integration is only for retreiving the data and making it available in Home Assistant. But you can create this feature yourself. [There](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441) [are](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/87) [some](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/114) [great](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/52) [examples](https://community.home-assistant.io/t/custom-component-homewizard-energy-wifi-p1-meter/227441/78).
 
 ## API documentation
-[HomeWizard Energy local API](https://energy.homewizard.net/en/support/solutions/articles/19000117051-homewizard-p1-meter-local-api)
+[HomeWizard Energy local API](https://homewizard-energy-api.readthedocs.io/#)
 
 ## Disclaimer
 This integration is not developed, nor supported by HomeWizard.
