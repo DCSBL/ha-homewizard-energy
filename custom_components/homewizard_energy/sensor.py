@@ -22,6 +22,7 @@ from homeassistant.const import (
     PERCENTAGE,
     POWER_WATT,
     VOLUME_CUBIC_METERS,
+    DEVICE_CLASS_TIMESTAMP
 )
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import (
@@ -157,6 +158,7 @@ SENSORS: Final[list[SensorEntityDescription]] = [
         key=ATTR_GAS_TIMESTAMP,
         name="Gas timestamp",
         icon="mdi:timeline-clock",
+        device_class=DEVICE_CLASS_TIMESTAMP
     ),
 ]
 
