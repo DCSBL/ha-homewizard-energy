@@ -28,6 +28,7 @@ CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 
 PLATFORMS = ["sensor"]
 
+
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the Homewizard Energy component."""
     Logger.debug("__init__ async_setup")

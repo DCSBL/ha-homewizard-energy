@@ -1,24 +1,23 @@
 """Creates Homewizard Energy sensor entities."""
 import asyncio
-from enum import unique
 import logging
 import sys
 from datetime import timedelta
+from enum import unique
 from typing import Final
 
+import aiohwenergy
+import async_timeout
 from homeassistant.components.sensor import (
     ATTR_LAST_RESET,
     STATE_CLASS_MEASUREMENT,
     SensorEntity,
     SensorEntityDescription,
 )
-
-import aiohwenergy
-import async_timeout
 from homeassistant.const import (
-    DEVICE_CLASS_SIGNAL_STRENGTH,
-    DEVICE_CLASS_POWER,
     DEVICE_CLASS_ENERGY,
+    DEVICE_CLASS_POWER,
+    DEVICE_CLASS_SIGNAL_STRENGTH,
     ENERGY_KILO_WATT_HOUR,
     PERCENTAGE,
     POWER_WATT,
@@ -32,30 +31,26 @@ from homeassistant.helpers.update_coordinator import (
 from homeassistant.util.dt import utc_from_timestamp
 
 from .const import (
-    DOMAIN,
-
-    ATTR_SMR_VERSION,
-    ATTR_METER_MODEL,
-    ATTR_WIFI_SSID,
-    ATTR_WIFI_STRENGTH,
-    ATTR_TOTAL_POWER_IMPORT_T1_KWH,
-    ATTR_TOTAL_POWER_IMPORT_T2_KWH,
-    ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-    ATTR_TOTAL_POWER_EXPORT_T2_KWH,
-    ATTR_ACTIVE_POWER_W,
     ATTR_ACTIVE_POWER_L1_W,
     ATTR_ACTIVE_POWER_L2_W,
     ATTR_ACTIVE_POWER_L3_W,
-    ATTR_TOTAL_GAS_M3,
+    ATTR_ACTIVE_POWER_W,
     ATTR_GAS_TIMESTAMP,
-
+    ATTR_METER_MODEL,
+    ATTR_SMR_VERSION,
+    ATTR_TOTAL_GAS_M3,
+    ATTR_TOTAL_POWER_EXPORT_T1_KWH,
+    ATTR_TOTAL_POWER_EXPORT_T2_KWH,
+    ATTR_TOTAL_POWER_IMPORT_T1_KWH,
+    ATTR_TOTAL_POWER_IMPORT_T2_KWH,
+    ATTR_WIFI_SSID,
+    ATTR_WIFI_STRENGTH,
     CONF_API,
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
-
     DEFAULT_OVERRIDE_POLL_INTERVAL,
-    DEFAULT_POLL_INTERVAL_SECONDS
-
+    DEFAULT_POLL_INTERVAL_SECONDS,
+    DOMAIN,
 )
 
 Logger = logging.getLogger(__name__)
@@ -165,11 +160,10 @@ SENSORS: Final[list[SensorEntityDescription]] = [
     ),
 ]
 
+
 def get_update_interval(entry, energy_api):
 
-    if entry.options.get(
-        CONF_OVERRIDE_POLL_INTERVAL, DEFAULT_OVERRIDE_POLL_INTERVAL
-    ):
+    if entry.options.get(CONF_OVERRIDE_POLL_INTERVAL, DEFAULT_OVERRIDE_POLL_INTERVAL):
         return entry.options.get(
             CONF_POLL_INTERVAL_SECONDS, DEFAULT_POLL_INTERVAL_SECONDS
         )
@@ -271,7 +265,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     if energy_api.data != None:
         entities = []
         for description in SENSORS:
-            if (description.key in energy_api.data.available_datapoints):
+            if description.key in energy_api.data.available_datapoints:
                 entities.append(HWEnergySensor(coordinator, entry.data, description))
         async_add_entities(entities, update_before_add=True)
 
