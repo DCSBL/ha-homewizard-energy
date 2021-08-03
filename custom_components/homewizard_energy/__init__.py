@@ -26,10 +26,7 @@ Logger = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 
-# TODO List the platforms that you want to support.
-# For your initial PR, limit it to 1 platform.
 PLATFORMS = ["sensor"]
-
 
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the Homewizard Energy component."""
@@ -119,6 +116,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         if not result:
             return False
 
+    # Add listener for config updates
     hass.data[DOMAIN][entry.data["unique_id"]][
         CONF_UNLOAD_CB
     ] = entry.add_update_listener(async_entry_updated)
