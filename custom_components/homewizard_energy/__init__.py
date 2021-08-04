@@ -2,21 +2,29 @@
 import asyncio
 import logging
 import re
+from datetime import timedelta
 from enum import unique
 
 import aiohwenergy
 import async_timeout
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_API_VERSION, CONF_ID, CONF_STATE
 from homeassistant.core import Config, HomeAssistant
 from homeassistant.helpers import entity_registry
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import slugify
 
 from .const import (
     CONF_API,
+    CONF_DATA,
+    CONF_MODEL,
+    CONF_NAME,
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
+    CONF_SW_VERSION,
     CONF_UNLOAD_CB,
+    COORDINATOR,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
     DEFAULT_POLL_INTERVAL_SECONDS,
     DOMAIN,
@@ -122,7 +130,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         CONF_UNLOAD_CB
     ] = entry.add_update_listener(async_entry_updated)
 
+    # Get api and do a initialization
     energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
+    await energy_api.initialize()
+
+    # Create coordinator
+    coordinator = hass.data[DOMAIN][entry.data["unique_id"]][
+        COORDINATOR
+    ] = HWEnergyDeviceUpdateCoordinator(hass, energy_api)
+    await coordinator.async_config_entry_first_refresh()
+
     hass.data[DOMAIN][entry.data["unique_id"]][CONF_API] = energy_api
     for component in PLATFORMS:
         hass.async_create_task(
@@ -167,3 +184,53 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     Logger.debug("__init async_remove_entry")
     pass
+
+
+class HWEnergyDeviceUpdateCoordinator(DataUpdateCoordinator):
+    """Gather data for the energy device"""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        api: aiohwenergy.HomeWizardEnergy,
+    ) -> None:
+        self.api = api
+
+        update_interval = timedelta(seconds=10)
+        super().__init__(hass, Logger, name="", update_interval=update_interval)
+
+    async def _async_update_data(self) -> dict:
+        """Fetch all device and sensor data from api."""
+        try:
+            async with async_timeout.timeout(10):
+                # Update all properties
+                status = await self.api.update()
+
+                if not status:
+                    raise Exception("Failed to fetch data")
+
+                data = {
+                    CONF_NAME: self.api.device.product_name,
+                    CONF_MODEL: self.api.device.product_type,
+                    CONF_ID: self.api.device.serial,
+                    CONF_SW_VERSION: self.api.device.firmware_version,
+                    CONF_API_VERSION: self.api.device.api_version,
+                    CONF_DATA: {},
+                    CONF_STATE: None,
+                }
+
+                for datapoint in self.api.data.available_datapoints:
+                    data[CONF_DATA][datapoint] = getattr(self.api.data, datapoint)
+
+                if self.api.state is not None:
+                    data[CONF_STATE] = {
+                        "power_on": self.api.state.power_on,
+                        "switch_lock": self.api.state.switch_lock,
+                        "brightness": self.api.state.brightness,
+                    }
+
+        except Exception as ex:
+            raise UpdateFailed(ex) from ex
+
+        self.name = data[CONF_NAME]
+        return data
