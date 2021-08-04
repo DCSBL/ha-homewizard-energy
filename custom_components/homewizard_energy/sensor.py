@@ -1,7 +1,6 @@
 """Creates Homewizard Energy sensor entities."""
 import asyncio
 import logging
-from datetime import timedelta
 from typing import Any, Final
 
 import aiohwenergy
@@ -18,11 +17,11 @@ from homeassistant.const import (
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_SIGNAL_STRENGTH,
+    DEVICE_CLASS_TIMESTAMP,
     ENERGY_KILO_WATT_HOUR,
     PERCENTAGE,
     POWER_WATT,
     VOLUME_CUBIC_METERS,
-    DEVICE_CLASS_TIMESTAMP,
 )
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
@@ -51,9 +50,9 @@ from .const import (
     CONF_API,
     CONF_DATA,
     CONF_MODEL,
-    CONF_SW_VERSION,
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
+    CONF_SW_VERSION,
     COORDINATOR,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
     DEFAULT_POLL_INTERVAL_SECONDS,
