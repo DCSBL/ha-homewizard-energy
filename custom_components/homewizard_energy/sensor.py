@@ -1,10 +1,8 @@
 """Creates Homewizard Energy sensor entities."""
 import asyncio
 import logging
-import sys
 from datetime import timedelta
-from enum import unique
-from typing import Final
+from typing import Any, Final
 
 import aiohwenergy
 import async_timeout
@@ -15,6 +13,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.const import (
+    CONF_STATE,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_SIGNAL_STRENGTH,
@@ -22,9 +21,10 @@ from homeassistant.const import (
     PERCENTAGE,
     POWER_WATT,
     VOLUME_CUBIC_METERS,
-    DEVICE_CLASS_TIMESTAMP
+    DEVICE_CLASS_TIMESTAMP,
 )
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -47,16 +47,18 @@ from .const import (
     ATTR_WIFI_SSID,
     ATTR_WIFI_STRENGTH,
     CONF_API,
+    CONF_DATA,
+    CONF_MODEL,
+    CONF_SW_VERSION,
     CONF_OVERRIDE_POLL_INTERVAL,
     CONF_POLL_INTERVAL_SECONDS,
+    COORDINATOR,
     DEFAULT_OVERRIDE_POLL_INTERVAL,
     DEFAULT_POLL_INTERVAL_SECONDS,
     DOMAIN,
 )
 
 Logger = logging.getLogger(__name__)
-
-_PLATFORM = "sensor"
 
 SENSORS: Final[list[SensorEntityDescription]] = [
     SensorEntityDescription(
@@ -158,7 +160,7 @@ SENSORS: Final[list[SensorEntityDescription]] = [
         key=ATTR_GAS_TIMESTAMP,
         name="Gas timestamp",
         icon="mdi:timeline-clock",
-        device_class=DEVICE_CLASS_TIMESTAMP
+        device_class=DEVICE_CLASS_TIMESTAMP,
     ),
 ]
 
@@ -226,40 +228,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if not initialized:
             await energy_api.close()
 
-    # Callback for updating data
-    async def async_update_data():
-        """Fetch data from API endpoint."""
-        data = {}
-        async with async_timeout.timeout(10):
-            try:
-                status = await energy_api.data.update()
-
-                if status:
-                    for datapoint in energy_api.data.available_datapoints:
-                        data[datapoint] = getattr(energy_api.data, datapoint)
-
-                return data
-            except AttributeError:
-                Logger.error("Datapoint missing")
-                return
-            except aiohwenergy.errors.InvalidState:
-                Logger.error("Failed tot fetch new data")
-            finally:
-                return data
-
-    # Determine update interval
-    update_interval = get_update_interval(entry, energy_api)
-
-    # Create coordiantor for fetching the complete device
-    coordinator = DataUpdateCoordinator(
-        hass,
-        Logger,
-        # Name of the data. For logging purposes.
-        name=entry.data["name"],
-        update_method=async_update_data,
-        # Polling interval. Will only be polled if there are subscribers.
-        update_interval=timedelta(seconds=update_interval),
-    )
+    coordinator = hass.data[DOMAIN][entry.data["unique_id"]][COORDINATOR]
 
     # Fetch initial data so we have data when entities subscribe
     await coordinator.async_refresh()
@@ -301,11 +270,18 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         self._attr_last_reset = utc_from_timestamp(0)
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo:
         return {
             "name": self.name,
             "manufacturer": "HomeWizard",
+            "sw_version": self.data[CONF_SW_VERSION],
+            "model": self.data[CONF_MODEL],
         }
+
+    @property
+    def data(self) -> dict[str:Any]:
+        """Return data from DataUpdateCoordinator"""
+        return self.coordinator.data
 
     @property
     def icon(self):
@@ -315,17 +291,12 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
     @property
     def state(self):
         """Returns state of meter."""
-        return self.coordinator.data[self.data_type]
+        return self.data[CONF_DATA][self.data_type]
 
     @property
     def available(self):
         """Returns state of meter."""
-        return self.data_type in self.coordinator.data
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self.entity_description.unit_of_measurement
+        return self.data_type in self.data[CONF_DATA]
 
 
 async def async_get_aiohwenergy_from_entry_data(entry_data):

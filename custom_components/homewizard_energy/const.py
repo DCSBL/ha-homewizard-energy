@@ -4,6 +4,7 @@ from homeassistant import const
 
 # Set up.
 DOMAIN = "homewizard_energy"
+COORDINATOR = "coordinator"
 MANUFACTURER_NAME = "HomeWizard"
 PLATFORMS = ["sensor"]
 
@@ -14,6 +15,9 @@ CONF_NAME = const.CONF_NAME
 
 CONF_API = "api"
 CONF_UNLOAD_CB = "unload_unsub"
+CONF_MODEL = "model"
+CONF_SW_VERSION = "sw_ver"
+CONF_DATA = "data"
 
 # Services.
 SERVICE_UPDATE = "update"
