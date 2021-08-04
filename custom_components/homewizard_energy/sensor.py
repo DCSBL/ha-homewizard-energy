@@ -13,6 +13,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.const import (
+    CONF_ID,
     CONF_STATE,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
@@ -25,6 +26,7 @@ from homeassistant.const import (
 )
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
+import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -272,10 +274,11 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
     @property
     def device_info(self) -> DeviceInfo:
         return {
-            "name": self.name,
+            "name": self.entry_data["custom_name"],
             "manufacturer": "HomeWizard",
             "sw_version": self.data[CONF_SW_VERSION],
             "model": self.data[CONF_MODEL],
+            "identifiers": {(DOMAIN, self.data[CONF_ID])},
         }
 
     @property
