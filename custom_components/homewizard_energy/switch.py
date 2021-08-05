@@ -4,7 +4,6 @@ from typing import Any, Final
 
 import aiohwenergy
 import homeassistant.helpers.device_registry as dr
-from config.custom_components.homewizard_energy import Logger
 from homeassistant.components.switch import (
     DEVICE_CLASS_OUTLET,
     DEVICE_CLASS_SWITCH,
@@ -30,6 +29,8 @@ from .const import (
     COORDINATOR,
     DOMAIN,
 )
+
+Logger = logging.getLogger(__name__)
 
 SWITCHES: Final[list[SwitchEntityDescription]] = [
     SwitchEntityDescription(
