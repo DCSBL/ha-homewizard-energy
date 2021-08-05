@@ -20,11 +20,8 @@ from homeassistant.const import (
     POWER_WATT,
     VOLUME_CUBIC_METERS,
 )
-
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-)
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.dt import utc_from_timestamp
 
 from .const import (

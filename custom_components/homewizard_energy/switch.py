@@ -1,11 +1,10 @@
 """Creates Homewizard Energy switch entities."""
 
-from config.custom_components.homewizard_energy import Logger
-from homeassistant.const import CONF_STATE
 from typing import Any, Final
 
 import aiohwenergy
-
+import homeassistant.helpers.device_registry as dr
+from config.custom_components.homewizard_energy import Logger
 from homeassistant.components.switch import (
     DEVICE_CLASS_OUTLET,
     DEVICE_CLASS_SWITCH,
@@ -13,8 +12,8 @@ from homeassistant.components.switch import (
     SwitchEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_ID, CONF_STATE
 from homeassistant.core import DOMAIN, HomeAssistant
-import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
@@ -22,16 +21,14 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
-from homeassistant.const import CONF_ID
-
 from .const import (
     ATTR_POWER_ON,
     ATTR_SWITCHLOCK,
+    CONF_API,
     CONF_MODEL,
     CONF_SW_VERSION,
     COORDINATOR,
     DOMAIN,
-    CONF_API,
 )
 
 SWITCHES: Final[list[SwitchEntityDescription]] = [

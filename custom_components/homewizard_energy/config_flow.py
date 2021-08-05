@@ -15,10 +15,7 @@ from homeassistant.helpers.typing import ConfigType
 from voluptuous import All, Length, Required, Schema
 from voluptuous.util import Lower
 
-from .const import (
-    CONF_IP_ADDRESS,
-    DOMAIN,
-)
+from .const import CONF_IP_ADDRESS, DOMAIN
 
 Logger = logging.getLogger(__name__)
 
