@@ -270,6 +270,19 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         self.unique_id = "%s_%s" % (entry_data["unique_id"], description.key)
         self._attr_last_reset = utc_from_timestamp(0)
 
+        # Some values are given, but set to NULL (eg. gas_timestamp when no gas meter is connected)
+        if self.data[CONF_DATA][self.data_type] is None:
+            self.entity_description.entity_registry_enabled_default = False
+
+        # Special case for export, not everyone has solarpanels
+        # The change that 'export' is non-zero when you have solar panels is nil
+        if self.data_type in [
+            ATTR_TOTAL_POWER_EXPORT_T1_KWH,
+            ATTR_TOTAL_POWER_EXPORT_T2_KWH,
+        ]:
+            if self.data[CONF_DATA][self.data_type] == 0:
+                self.entity_description.entity_registry_enabled_default = False
+
     @property
     def device_info(self) -> DeviceInfo:
         return {
