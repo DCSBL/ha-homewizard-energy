@@ -3,6 +3,7 @@
 from typing import Any, Final
 
 import aiohwenergy
+import logging
 import homeassistant.helpers.device_registry as dr
 from homeassistant.components.switch import (
     DEVICE_CLASS_OUTLET,
