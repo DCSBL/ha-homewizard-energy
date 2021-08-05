@@ -162,29 +162,6 @@ SENSORS: Final[list[SensorEntityDescription]] = [
 ]
 
 
-def get_update_interval(entry, energy_api):
-
-    try:
-        product_type = energy_api.device.product_type
-    except AttributeError:
-        product_type = "Unknown"
-
-    if product_type == "HWE-P1":
-        try:
-            smr_version = energy_api.data.smr_version
-            if smr_version == 50:
-                return 1
-            else:
-                return 5
-        except AttributeError:
-            pass
-
-    elif product_type == "SDM230-wifi" or product_type == "SDM630-wifi":
-        return 1
-
-    return 10
-
-
 async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
     Logger.info("Setting up sensor for HomeWizard Energy.")

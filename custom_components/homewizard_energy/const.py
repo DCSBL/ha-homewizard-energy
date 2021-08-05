@@ -41,3 +41,9 @@ ATTR_GAS_TIMESTAMP = "gas_timestamp"
 # Default values.
 DEFAULT_STR_VALUE = "undefined"
 DEVICE_DEFAULT_NAME = "P1 Meter"
+
+# Device models
+MODEL_P1 = "HWE-P1"
+MODEL_KWH_1 = "SDM230-wifi"
+MODEL_KWH_3 = "SDM630-wifi"
+MODEL_SOCKET = "HWE-SKT"

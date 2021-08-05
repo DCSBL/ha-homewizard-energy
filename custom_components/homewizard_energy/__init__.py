@@ -24,6 +24,10 @@ from .const import (
     CONF_UNLOAD_CB,
     COORDINATOR,
     DOMAIN,
+    MODEL_KWH_1,
+    MODEL_KWH_3,
+    MODEL_P1,
+    MODEL_SOCKET,
 )
 
 Logger = logging.getLogger(__name__)
@@ -192,8 +196,30 @@ class HWEnergyDeviceUpdateCoordinator(DataUpdateCoordinator):
     ) -> None:
         self.api = api
 
-        update_interval = timedelta(seconds=10)
+        update_interval = self.get_update_interval()
         super().__init__(hass, Logger, name="", update_interval=update_interval)
+
+    def get_update_interval(self) -> timedelta:
+
+        try:
+            product_type = self.api.device.product_type
+        except AttributeError:
+            product_type = "Unknown"
+
+        if product_type == MODEL_P1:
+            try:
+                smr_version = self.api.data.smr_version
+                if smr_version == 50 :
+                    return timedelta(seconds=1)
+                else:
+                    return timedelta(seconds=5)
+            except AttributeError:
+                pass
+
+        elif product_type in [MODEL_KWH_1, MODEL_KWH_3, MODEL_SOCKET]:
+            return timedelta(seconds=5)
+
+        return timedelta(seconds=10)
 
     async def _async_update_data(self) -> dict:
         """Fetch all device and sensor data from api."""
