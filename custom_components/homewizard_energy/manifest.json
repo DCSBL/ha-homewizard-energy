@@ -11,7 +11,7 @@
     "zeroconf"
   ],
   "requirements": [
-    "aiohwenergy==0.2.2"
+    "aiohwenergy==0.2.3"
   ],
   "zeroconf": [
     "_hwenergy._tcp.local."
