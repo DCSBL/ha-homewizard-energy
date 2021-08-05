@@ -1,5 +1,5 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
-[![Version](https://img.shields.io/badge/Version-0.8.1-blue.svg)](https://github.com/DCSBL/ha-homewizard-energy)
+[![Version](https://img.shields.io/badge/Version-0.9.2-beta-2-blue.svg)](https://github.com/DCSBL/ha-homewizard-energy)
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/Create%20release/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/Validation%20And%20Formatting/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
 [![Actions Status](https://github.com/DCSBL/ha-homewizard-energy/workflows/CodeQL/badge.svg)](https://github.com/DCSBL/ha-homewizard-energy/actions)
