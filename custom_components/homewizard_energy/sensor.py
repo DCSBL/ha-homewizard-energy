@@ -50,12 +50,8 @@ from .const import (
     CONF_API,
     CONF_DATA,
     CONF_MODEL,
-    CONF_OVERRIDE_POLL_INTERVAL,
-    CONF_POLL_INTERVAL_SECONDS,
     CONF_SW_VERSION,
     COORDINATOR,
-    DEFAULT_OVERRIDE_POLL_INTERVAL,
-    DEFAULT_POLL_INTERVAL_SECONDS,
     DOMAIN,
 )
 
@@ -167,11 +163,6 @@ SENSORS: Final[list[SensorEntityDescription]] = [
 
 
 def get_update_interval(entry, energy_api):
-
-    if entry.options.get(CONF_OVERRIDE_POLL_INTERVAL, DEFAULT_OVERRIDE_POLL_INTERVAL):
-        return entry.options.get(
-            CONF_POLL_INTERVAL_SECONDS, DEFAULT_POLL_INTERVAL_SECONDS
-        )
 
     try:
         product_type = energy_api.device.product_type
