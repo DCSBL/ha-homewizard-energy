@@ -1,9 +1,6 @@
 """The Homewizard Energy integration."""
 import asyncio
-from homeassistant.const import CONF_API_VERSION, CONF_ID, CONF_STATE
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 import logging
-from datetime import timedelta
 import re
 from datetime import timedelta
 from enum import unique

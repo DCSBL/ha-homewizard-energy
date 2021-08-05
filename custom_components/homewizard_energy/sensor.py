@@ -5,6 +5,7 @@ from typing import Any, Final
 
 import aiohwenergy
 import async_timeout
+import homeassistant.helpers.device_registry as dr
 from homeassistant.components.sensor import (
     ATTR_LAST_RESET,
     STATE_CLASS_MEASUREMENT,
@@ -25,7 +26,6 @@ from homeassistant.const import (
 )
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
-import homeassistant.helpers.device_registry as dr
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
