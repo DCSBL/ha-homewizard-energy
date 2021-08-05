@@ -4,17 +4,13 @@ import logging
 from typing import Any, Final
 
 import aiohwenergy
-import async_timeout
-import homeassistant.helpers.device_registry as dr
 from homeassistant.components.sensor import (
-    ATTR_LAST_RESET,
     STATE_CLASS_MEASUREMENT,
     SensorEntity,
     SensorEntityDescription,
 )
 from homeassistant.const import (
     CONF_ID,
-    CONF_STATE,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_SIGNAL_STRENGTH,
@@ -24,11 +20,10 @@ from homeassistant.const import (
     POWER_WATT,
     VOLUME_CUBIC_METERS,
 )
-from homeassistant.exceptions import ConfigEntryNotReady
+
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
-    DataUpdateCoordinator,
 )
 from homeassistant.util.dt import utc_from_timestamp
 
@@ -167,36 +162,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
     energy_api = hass.data[DOMAIN][entry.data["unique_id"]][CONF_API]
-
-    # Validate connection
-    initialized = False
-    try:
-        with async_timeout.timeout(10):
-            await energy_api.initialize()
-            initialized = True
-
-    except (asyncio.TimeoutError, aiohwenergy.RequestError):
-        Logger.error(
-            "Error connecting to the Energy device at %s",
-            energy_api._host,
-        )
-        raise ConfigEntryNotReady
-
-    except aiohwenergy.AioHwEnergyException:
-        Logger.exception("Unknown Energy API error occurred")
-        raise ConfigEntryNotReady
-
-    except Exception:  # pylint: disable=broad-except
-        Logger.exception(
-            "Unknown error connecting with Energy Device at %s",
-            energy_api._host["host"],
-        )
-        return False
-
-    finally:
-        if not initialized:
-            await energy_api.close()
-
     coordinator = hass.data[DOMAIN][entry.data["unique_id"]][COORDINATOR]
 
     # Fetch initial data so we have data when entities subscribe
@@ -211,14 +176,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
         return True
     else:
-        await energy_api.close()
         return False
 
 
 class HWEnergySensor(CoordinatorEntity, SensorEntity):
-    """Representation of a HomeWizard Energy"""
+    """Representation of a HomeWizard Energy Sensor"""
 
-    host = None
     name = None
     entry_data = None
     unique_id = None
@@ -233,7 +196,6 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
 
         # Config attributes.
         self.name = "%s %s" % (entry_data["custom_name"], description.name)
-        self.host = entry_data["host"]
         self.data_type = description.key
         self.unique_id = "%s_%s" % (entry_data["unique_id"], description.key)
         self._attr_last_reset = utc_from_timestamp(0)

@@ -11,11 +11,15 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_VERSION, CONF_ID, CONF_STATE
 from homeassistant.core import Config, HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import entity_registry
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import slugify
 
 from .const import (
+    ATTR_BRIGHTNESS,
+    ATTR_POWER_ON,
+    ATTR_SWITCHLOCK,
     CONF_API,
     CONF_DATA,
     CONF_MODEL,
@@ -28,13 +32,12 @@ from .const import (
     MODEL_KWH_3,
     MODEL_P1,
     MODEL_SOCKET,
+    PLATFORMS,
 )
 
 Logger = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
-
-PLATFORMS = ["sensor"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict):
@@ -132,7 +135,35 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Get api and do a initialization
     energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
-    await energy_api.initialize()
+
+    # Validate connection
+    initialized = False
+    try:
+        with async_timeout.timeout(10):
+            await energy_api.initialize()
+            initialized = True
+
+    except (asyncio.TimeoutError, aiohwenergy.RequestError):
+        Logger.error(
+            "Error connecting to the Energy device at %s",
+            energy_api._host,
+        )
+        raise ConfigEntryNotReady
+
+    except aiohwenergy.AioHwEnergyException:
+        Logger.exception("Unknown Energy API error occurred")
+        raise ConfigEntryNotReady
+
+    except Exception:  # pylint: disable=broad-except
+        Logger.exception(
+            "Unknown error connecting with Energy Device at %s",
+            energy_api._host["host"],
+        )
+        return False
+
+    finally:
+        if not initialized:
+            await energy_api.close()
 
     # Create coordinator
     coordinator = hass.data[DOMAIN][entry.data["unique_id"]][
@@ -209,7 +240,7 @@ class HWEnergyDeviceUpdateCoordinator(DataUpdateCoordinator):
         if product_type == MODEL_P1:
             try:
                 smr_version = self.api.data.smr_version
-                if smr_version == 50 :
+                if smr_version == 50:
                     return timedelta(seconds=1)
                 else:
                     return timedelta(seconds=5)
@@ -246,9 +277,9 @@ class HWEnergyDeviceUpdateCoordinator(DataUpdateCoordinator):
 
                 if self.api.state is not None:
                     data[CONF_STATE] = {
-                        "power_on": self.api.state.power_on,
-                        "switch_lock": self.api.state.switch_lock,
-                        "brightness": self.api.state.brightness,
+                        ATTR_POWER_ON: self.api.state.power_on,
+                        ATTR_SWITCHLOCK: self.api.state.switch_lock,
+                        ATTR_BRIGHTNESS: self.api.state.brightness,
                     }
 
         except Exception as ex:
