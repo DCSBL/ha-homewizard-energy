@@ -1,4 +1,6 @@
 """Creates Homewizard Energy sensor entities."""
+from __future__ import annotations
+
 import asyncio
 import logging
 from typing import Any, Final
@@ -49,7 +51,7 @@ from .const import (
 
 Logger = logging.getLogger(__name__)
 
-SENSORS: Final[list[SensorEntityDescription]] = [
+SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_SMR_VERSION,
         name="SMR version",
@@ -151,7 +153,7 @@ SENSORS: Final[list[SensorEntityDescription]] = [
         icon="mdi:timeline-clock",
         device_class=DEVICE_CLASS_TIMESTAMP,
     ),
-]
+)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
