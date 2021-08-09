@@ -1,0 +1,20 @@
+# The release drafter uses ../release-drafter.yml to create a release document
+# based on the pull requests and its labels
+
+name: Draft release
+
+on:
+  push:
+    branches:
+      - main
+      - development 
+      - test
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

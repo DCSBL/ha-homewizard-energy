@@ -1,7 +1,6 @@
 name: "Validation And Formatting"
 on:
   pull_request:
-
     
 jobs:
   ci:

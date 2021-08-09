@@ -1,0 +1,47 @@
+# Combine files and upload it as zip to the release
+# Original file from https://github.com/hacs/integration/blob/main/.github/workflows/release.yml
+
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release_zip_file:
+    name: Prepare release asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: "Set version number"
+        run: |
+          python3 ${{ github.workspace }}/.github/helpers/update_manifest.py --version ${GITHUB_REF##*/}
+          
+      - name: Combine ZIP
+        run: |
+          cd ${{ github.workspace }}/custom_components/homewizard_energy
+          zip homewizard_energy.zip -r ./          
+      
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/custom_components/homewizard_energy/homewizard_energy.zip
+          asset_name: homewizard_energy.zip
+          asset_content_type: application/zip
