@@ -1,4 +1,6 @@
 """Creates Homewizard Energy sensor entities."""
+from __future__ import annotations
+
 import asyncio
 import logging
 import sys
@@ -58,7 +60,7 @@ Logger = logging.getLogger(__name__)
 
 _PLATFORM = "sensor"
 
-SENSORS: Final[list[SensorEntityDescription]] = [
+SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_SMR_VERSION,
         name="SMR version",
@@ -160,7 +162,7 @@ SENSORS: Final[list[SensorEntityDescription]] = [
         icon="mdi:timeline-clock",
         device_class=DEVICE_CLASS_TIMESTAMP
     ),
-]
+)
 
 
 def get_update_interval(entry, energy_api):
