@@ -17,21 +17,11 @@
                 "data": {
                     "ip_address": "IP Address"
                 },
-                "description": "Set up your HomeWizard Energy P1 meter to integrate with Home Assistant.",
+                "description": "Enter the IP address of your HomeWizard Energy device to integrate with Home Assistant.",
                 "title": "Configure device"
             },
             "discovery_confirm": {
                 "description": "Please enter a name for your {name}:"
-            }
-        }
-    },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "override_poll_interval": "Override default poll interval",
-                    "poll_interval_seconds": "Poll interval (seconds)"
-                }
             }
         }
     }
