@@ -1,34 +1,29 @@
 """Creates Homewizard Energy sensor entities."""
+from __future__ import annotations
+
 import asyncio
 import logging
-from datetime import timedelta
 from typing import Any, Final
 
 import aiohwenergy
-import async_timeout
 from homeassistant.components.sensor import (
-    ATTR_LAST_RESET,
     STATE_CLASS_MEASUREMENT,
     SensorEntity,
     SensorEntityDescription,
 )
 from homeassistant.const import (
-    CONF_STATE,
+    CONF_ID,
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
     DEVICE_CLASS_SIGNAL_STRENGTH,
+    DEVICE_CLASS_TIMESTAMP,
     ENERGY_KILO_WATT_HOUR,
     PERCENTAGE,
     POWER_WATT,
     VOLUME_CUBIC_METERS,
-    DEVICE_CLASS_TIMESTAMP,
 )
-from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.dt import utc_from_timestamp
 
 from .const import (
@@ -50,17 +45,13 @@ from .const import (
     CONF_DATA,
     CONF_MODEL,
     CONF_SW_VERSION,
-    CONF_OVERRIDE_POLL_INTERVAL,
-    CONF_POLL_INTERVAL_SECONDS,
     COORDINATOR,
-    DEFAULT_OVERRIDE_POLL_INTERVAL,
-    DEFAULT_POLL_INTERVAL_SECONDS,
     DOMAIN,
 )
 
 Logger = logging.getLogger(__name__)
 
-SENSORS: Final[list[SensorEntityDescription]] = [
+SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_SMR_VERSION,
         name="SMR version",
@@ -162,35 +153,7 @@ SENSORS: Final[list[SensorEntityDescription]] = [
         icon="mdi:timeline-clock",
         device_class=DEVICE_CLASS_TIMESTAMP,
     ),
-]
-
-
-def get_update_interval(entry, energy_api):
-
-    if entry.options.get(CONF_OVERRIDE_POLL_INTERVAL, DEFAULT_OVERRIDE_POLL_INTERVAL):
-        return entry.options.get(
-            CONF_POLL_INTERVAL_SECONDS, DEFAULT_POLL_INTERVAL_SECONDS
-        )
-
-    try:
-        product_type = energy_api.device.product_type
-    except AttributeError:
-        product_type = "Unknown"
-
-    if product_type == "HWE-P1":
-        try:
-            smr_version = energy_api.data.smr_version
-            if smr_version == 50:
-                return 1
-            else:
-                return 5
-        except AttributeError:
-            pass
-
-    elif product_type == "SDM230-wifi" or product_type == "SDM630-wifi":
-        return 1
-
-    return 10
+)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -198,36 +161,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
     Logger.info("Setting up sensor for HomeWizard Energy.")
 
     energy_api = hass.data[DOMAIN][entry.data["unique_id"]][CONF_API]
-
-    # Validate connection
-    initialized = False
-    try:
-        with async_timeout.timeout(10):
-            await energy_api.initialize()
-            initialized = True
-
-    except (asyncio.TimeoutError, aiohwenergy.RequestError):
-        Logger.error(
-            "Error connecting to the Energy device at %s",
-            energy_api._host,
-        )
-        raise ConfigEntryNotReady
-
-    except aiohwenergy.AioHwEnergyException:
-        Logger.exception("Unknown Energy API error occurred")
-        raise ConfigEntryNotReady
-
-    except Exception:  # pylint: disable=broad-except
-        Logger.exception(
-            "Unknown error connecting with Energy Device at %s",
-            energy_api._host["host"],
-        )
-        return False
-
-    finally:
-        if not initialized:
-            await energy_api.close()
-
     coordinator = hass.data[DOMAIN][entry.data["unique_id"]][COORDINATOR]
 
     # Fetch initial data so we have data when entities subscribe
@@ -242,14 +175,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
         return True
     else:
-        await energy_api.close()
         return False
 
 
 class HWEnergySensor(CoordinatorEntity, SensorEntity):
-    """Representation of a HomeWizard Energy"""
+    """Representation of a HomeWizard Energy Sensor"""
 
-    host = None
     name = None
     entry_data = None
     unique_id = None
@@ -264,18 +195,31 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
 
         # Config attributes.
         self.name = "%s %s" % (entry_data["custom_name"], description.name)
-        self.host = entry_data["host"]
         self.data_type = description.key
         self.unique_id = "%s_%s" % (entry_data["unique_id"], description.key)
         self._attr_last_reset = utc_from_timestamp(0)
 
+        # Some values are given, but set to NULL (eg. gas_timestamp when no gas meter is connected)
+        if self.data[CONF_DATA][self.data_type] is None:
+            self.entity_description.entity_registry_enabled_default = False
+
+        # Special case for export, not everyone has solarpanels
+        # The change that 'export' is non-zero when you have solar panels is nil
+        if self.data_type in [
+            ATTR_TOTAL_POWER_EXPORT_T1_KWH,
+            ATTR_TOTAL_POWER_EXPORT_T2_KWH,
+        ]:
+            if self.data[CONF_DATA][self.data_type] == 0:
+                self.entity_description.entity_registry_enabled_default = False
+
     @property
     def device_info(self) -> DeviceInfo:
         return {
-            "name": self.name,
+            "name": self.entry_data["custom_name"],
             "manufacturer": "HomeWizard",
             "sw_version": self.data[CONF_SW_VERSION],
             "model": self.data[CONF_MODEL],
+            "identifiers": {(DOMAIN, self.data[CONF_ID])},
         }
 
     @property

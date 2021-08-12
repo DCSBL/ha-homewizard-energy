@@ -6,7 +6,7 @@ from homeassistant import const
 DOMAIN = "homewizard_energy"
 COORDINATOR = "coordinator"
 MANUFACTURER_NAME = "HomeWizard"
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor", "switch"]
 
 # Platform config.
 CONF_ENTITY_ID = const.CONF_ENTITY_ID
@@ -38,14 +38,17 @@ ATTR_ACTIVE_POWER_L3_W = "active_power_l3_w"
 ATTR_TOTAL_GAS_M3 = "total_gas_m3"
 ATTR_GAS_TIMESTAMP = "gas_timestamp"
 
+# State attributes
+ATTR_POWER_ON = "power_on"
+ATTR_SWITCHLOCK = "switch_lock"
+ATTR_BRIGHTNESS = "brightness"
+
 # Default values.
 DEFAULT_STR_VALUE = "undefined"
 DEVICE_DEFAULT_NAME = "P1 Meter"
 
-
-# Config
-CONF_OVERRIDE_POLL_INTERVAL = "override_poll_interval"
-DEFAULT_OVERRIDE_POLL_INTERVAL = False
-
-CONF_POLL_INTERVAL_SECONDS = "poll_interval_seconds"
-DEFAULT_POLL_INTERVAL_SECONDS = 10
+# Device models
+MODEL_P1 = "HWE-P1"
+MODEL_KWH_1 = "SDM230-wifi"
+MODEL_KWH_3 = "SDM630-wifi"
+MODEL_SOCKET = "HWE-SKT"
