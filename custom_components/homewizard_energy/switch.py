@@ -35,7 +35,7 @@ Logger = logging.getLogger(__name__)
 
 SWITCHES: Final[list[SwitchEntityDescription]] = [
     SwitchEntityDescription(
-        key=ATTR_POWER_ON, name="On", device_class=DEVICE_CLASS_OUTLET
+        key=ATTR_POWER_ON, name="Switch", device_class=DEVICE_CLASS_OUTLET
     ),
     SwitchEntityDescription(
         key=ATTR_SWITCHLOCK,
