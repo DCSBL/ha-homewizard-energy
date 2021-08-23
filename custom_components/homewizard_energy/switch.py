@@ -1,4 +1,5 @@
 """Creates Homewizard Energy switch entities."""
+from __future__ import annotations
 
 from typing import Any, Final
 
@@ -33,7 +34,7 @@ from .const import (
 
 Logger = logging.getLogger(__name__)
 
-SWITCHES: Final[list[SwitchEntityDescription]] = [
+SWITCHES: Final[tuple[SwitchEntityDescription, ...]] = (
     SwitchEntityDescription(
         key=ATTR_POWER_ON, name="Switch", device_class=DEVICE_CLASS_OUTLET
     ),
@@ -43,7 +44,8 @@ SWITCHES: Final[list[SwitchEntityDescription]] = [
         device_class=DEVICE_CLASS_SWITCH,
         icon="mdi:lock",
     ),
-]
+)
+
 
 
 async def async_setup_entry(
