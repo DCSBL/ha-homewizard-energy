@@ -8,6 +8,7 @@ from typing import Any, Final
 import aiohwenergy
 from homeassistant.components.sensor import (
     STATE_CLASS_MEASUREMENT,
+    STATE_CLASS_TOTAL_INCREASING,
     SensorEntity,
     SensorEntityDescription,
 )
@@ -82,7 +83,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         icon="mdi:home-import-outline",
         unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_POWER_IMPORT_T2_KWH,
@@ -90,7 +91,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         icon="mdi:home-import-outline",
         unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_POWER_EXPORT_T1_KWH,
@@ -98,7 +99,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         icon="mdi:home-export-outline",
         unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_POWER_EXPORT_T2_KWH,
@@ -106,7 +107,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         icon="mdi:home-export-outline",
         unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
-        state_class=STATE_CLASS_MEASUREMENT,
+        state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_W,
