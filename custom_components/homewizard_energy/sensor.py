@@ -35,10 +35,10 @@ from .const import (
     ATTR_METER_MODEL,
     ATTR_SMR_VERSION,
     ATTR_TOTAL_GAS_M3,
-    ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-    ATTR_TOTAL_POWER_EXPORT_T2_KWH,
-    ATTR_TOTAL_POWER_IMPORT_T1_KWH,
-    ATTR_TOTAL_POWER_IMPORT_T2_KWH,
+    ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+    ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
+    ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
+    ATTR_TOTAL_ENERGY_IMPORT_T2_KWH,
     ATTR_WIFI_SSID,
     ATTR_WIFI_STRENGTH,
     CONF_API,
@@ -76,32 +76,32 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_IMPORT_T1_KWH,
-        name="Total power import T1",
+        key=ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
+        name="Total energy import T1",
         icon="mdi:home-import-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_IMPORT_T2_KWH,
-        name="Total power import T2",
+        key=ATTR_TOTAL_ENERGY_IMPORT_T2_KWH,
+        name="Total energy import T2",
         icon="mdi:home-import-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-        name="Total power export T1",
+        key=ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+        name="Total energy export T1",
         icon="mdi:home-export-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_EXPORT_T2_KWH,
-        name="Total power export T2",
+        key=ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
+        name="Total energy export T2",
         icon="mdi:home-export-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
@@ -205,8 +205,8 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         # Special case for export, not everyone has solarpanels
         # The change that 'export' is non-zero when you have solar panels is nil
         if self.data_type in [
-            ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-            ATTR_TOTAL_POWER_EXPORT_T2_KWH,
+            ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+            ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
         ]:
             if self.data[CONF_DATA][self.data_type] == 0:
                 self.entity_description.entity_registry_enabled_default = False
