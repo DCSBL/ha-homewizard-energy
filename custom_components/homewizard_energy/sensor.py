@@ -35,10 +35,10 @@ from .const import (
     ATTR_METER_MODEL,
     ATTR_SMR_VERSION,
     ATTR_TOTAL_GAS_M3,
-    ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-    ATTR_TOTAL_POWER_EXPORT_T2_KWH,
-    ATTR_TOTAL_POWER_IMPORT_T1_KWH,
-    ATTR_TOTAL_POWER_IMPORT_T2_KWH,
+    ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+    ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
+    ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
+    ATTR_TOTAL_ENERGY_IMPORT_T2_KWH,
     ATTR_WIFI_SSID,
     ATTR_WIFI_STRENGTH,
     CONF_API,
@@ -54,7 +54,7 @@ Logger = logging.getLogger(__name__)
 SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_SMR_VERSION,
-        name="SMR version",
+        name="SMR Version",
         icon="mdi:wifi",
     ),
     SensorEntityDescription(
@@ -76,32 +76,32 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_IMPORT_T1_KWH,
-        name="Total power import T1",
+        key=ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
+        name="Total Energy Import T1",
         icon="mdi:home-import-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_IMPORT_T2_KWH,
-        name="Total power import T2",
+        key=ATTR_TOTAL_ENERGY_IMPORT_T2_KWH,
+        name="Total Energy Import T2",
         icon="mdi:home-import-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-        name="Total power export T1",
+        key=ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+        name="Total Energy Export T1",
         icon="mdi:home-export-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_EXPORT_T2_KWH,
-        name="Total power export T2",
+        key=ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
+        name="Total Energy Export T2",
         icon="mdi:home-export-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
@@ -109,7 +109,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     ),
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_W,
-        name="Active power",
+        name="Active Power",
         icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
@@ -117,7 +117,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     ),
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_L1_W,
-        name="Active power L1",
+        name="Active Power L1",
         icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
@@ -125,7 +125,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     ),
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_L2_W,
-        name="Active power L2",
+        name="Active Power L2",
         icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
@@ -133,7 +133,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     ),
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_L3_W,
-        name="Active power L3",
+        name="Active Power L3",
         icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
@@ -141,7 +141,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_GAS_M3,
-        name="Total gas",
+        name="Total Gas",
         icon="mdi:fire",
         native_unit_of_measurement=VOLUME_CUBIC_METERS,
         device_class=DEVICE_CLASS_GAS,
@@ -149,7 +149,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     ),
     SensorEntityDescription(
         key=ATTR_GAS_TIMESTAMP,
-        name="Gas timestamp",
+        name="Gas Timestamp",
         icon="mdi:timeline-clock",
         device_class=DEVICE_CLASS_TIMESTAMP,
     ),
@@ -205,8 +205,8 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         # Special case for export, not everyone has solarpanels
         # The change that 'export' is non-zero when you have solar panels is nil
         if self.data_type in [
-            ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-            ATTR_TOTAL_POWER_EXPORT_T2_KWH,
+            ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+            ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
         ]:
             if self.data[CONF_DATA][self.data_type] == 0:
                 self.entity_description.entity_registry_enabled_default = False
