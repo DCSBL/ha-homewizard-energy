@@ -76,7 +76,7 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     SensorEntityDescription(
-        key=ATTR_TOTAL_POWER_IMPORT_T1_KWH,
+        key=ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
         name="Total energy import T1",
         icon="mdi:home-import-outline",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
@@ -205,8 +205,8 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         # Special case for export, not everyone has solarpanels
         # The change that 'export' is non-zero when you have solar panels is nil
         if self.data_type in [
-            ATTR_TOTAL_POWER_EXPORT_T1_KWH,
-            ATTR_TOTAL_POWER_EXPORT_T2_KWH,
+            ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
+            ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
         ]:
             if self.data[CONF_DATA][self.data_type] == 0:
                 self.entity_description.entity_registry_enabled_default = False
