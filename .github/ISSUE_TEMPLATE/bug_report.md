@@ -3,9 +3,9 @@ name: Bug report
 about: Create a report to help improve this integraion
 title: ''
 labels: bug
-assignees: @DCSBL
-
+assignees:
 ---
+
 <!-- PLEASE USE THIS TEMPLATE, ISSUES THAT ARE UNCLEAR WILL BE CLOSED -->
 **Describe the bug**
 
