@@ -1,180 +1,148 @@
 """Config flow for Homewizard Energy."""
-import asyncio
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohwenergy
-import async_timeout
-import voluptuous as vol
 from aiohwenergy.hwenergy import SUPPORTED_DEVICES
-from homeassistant import config_entries
-from homeassistant.core import callback
-from homeassistant.helpers import config_entry_flow
-from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.typing import ConfigType
+import async_timeout
 from voluptuous import All, Length, Required, Schema
 from voluptuous.util import Lower
 
-from .const import CONF_IP_ADDRESS, DOMAIN
+from homeassistant import config_entries
+from homeassistant.const import CONF_HOST, CONF_IP_ADDRESS, CONF_PORT
+from homeassistant.data_entry_flow import FlowResult
 
-Logger = logging.getLogger(__name__)
+from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for P1 meter."""
 
     VERSION = 1
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     def __init__(self):
         """Set up the instance."""
-        Logger.debug("config_flow __init__")
+        _LOGGER.debug("config_flow __init__")
 
     async def async_step_user(
-        self, user_input: Optional[ConfigType] = None
-    ) -> Dict[str, Any]:
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
         """Handle a flow initiated by the user."""
+
+        _LOGGER.debug("config_flow async_step_user")
+
         if user_input is None:
-            return self._show_setup_form()
-
-        # Check if data is IP (Volup?)
-
-        # Make connection with device
-        energy_api = aiohwenergy.HomeWizardEnergy(user_input[CONF_IP_ADDRESS])
-
-        initialized = False
-        try:
-            with async_timeout.timeout(10):
-                await energy_api.initialize()
-                if energy_api.device != None:
-                    initialized = True
-        except (asyncio.TimeoutError, aiohwenergy.RequestError):
-            Logger.error(
-                "Error connecting to the Energy device at %s",
-                energy_api._host,
+            return self.async_show_form(
+                step_id="user",
+                data_schema=Schema(
+                    {
+                        Required(CONF_IP_ADDRESS): str,
+                    }
+                ),
+                errors=None,
             )
-            return self.async_abort(reason="manual_config_request_error")
 
-        except aiohwenergy.AioHwEnergyException:
-            Logger.exception("Unknown Energy API error occurred")
-            return self.async_abort(reason="manual_config_unknown_error")
-
-        except Exception:  # pylint: disable=broad-except
-            Logger.exception(
-                "Unknown error connecting with Energy Device at %s",
-                energy_api._host["host"],
-            )
-            return self.async_abort(reason="manual_config_unknown_error")
-
-        finally:
-            await energy_api.close()
-
-        if not initialized:
-            return self.async_abort(reason="manual_config_unknown_error")
-
-        # Validate metadata
-        if energy_api.device.api_version != "v1":
-            return self.async_abort(reason="manual_config_unsupported_api_version")
-
-        # Configure device
         entry_info = {
-            "host": user_input[CONF_IP_ADDRESS],
-            "port": 80,
-            "api_enabled": "1",
-            "path": "/api/v1",
-            "product_name": energy_api.device.product_name,
-            "product_type": energy_api.device.product_type,
-            "serial": energy_api.device.serial,
+            CONF_IP_ADDRESS: user_input[CONF_IP_ADDRESS],
+            CONF_PORT: 80,
         }
 
-        Logger.debug(entry_info)
-
         return await self.async_step_check(entry_info)
-
-    def _show_setup_form(self, errors: Optional[Dict] = None) -> Dict[str, Any]:
-        """Show the setup form to the user."""
-        return self.async_show_form(
-            step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_IP_ADDRESS): str,
-                }
-            ),
-            errors=errors or {},
-        )
 
     async def async_step_zeroconf(self, discovery_info):
         """Handle zeroconf discovery."""
 
-        Logger.debug("config_flow async_step_zeroconf")
+        _LOGGER.debug("config_flow async_step_zeroconf")
 
+        # Validate doscovery entry
+        if (
+            "host" not in discovery_info
+            or "api_enabled" not in discovery_info["properties"]
+            or "path" not in discovery_info["properties"]
+            or "product_name" not in discovery_info["properties"]
+            or "product_type" not in discovery_info["properties"]
+            or "serial" not in discovery_info["properties"]
+        ):
+            return self.async_abort(reason="invalid_discovery_parameters")
+
+        if (discovery_info["properties"]["path"]) != "/api/v1":
+            return self.async_abort(reason="unsupported_api_version")
+
+        if (discovery_info["properties"]["api_enabled"]) != "1":
+            return self.async_abort(reason="api_not_enabled")
+
+        # Pass parameters
         entry_info = {
-            "host": discovery_info["host"],
-            "port": discovery_info["port"],
-            "api_enabled": discovery_info["properties"]["api_enabled"]
-            if "api_enabled" in discovery_info["properties"]
-            else None,
-            "path": discovery_info["properties"]["path"]
-            if "path" in discovery_info["properties"]
-            else None,
-            "product_name": discovery_info["properties"]["product_name"]
-            if "product_name" in discovery_info["properties"]
-            else None,
-            "product_type": discovery_info["properties"]["product_type"]
-            if "product_type" in discovery_info["properties"]
-            else None,
-            "serial": discovery_info["properties"]["serial"]
-            if "serial" in discovery_info["properties"]
-            else None,
+            CONF_IP_ADDRESS: discovery_info["host"],
+            CONF_PORT: discovery_info["port"],
         }
 
         return await self.async_step_check(entry_info)
 
     async def async_step_check(self, entry_info):
-        """Perform some checks and create entry if OK."""
+        """Validate API connection and fetch metadata."""
 
-        Logger.debug("config_flow async_step_check")
+        _LOGGER.debug("config_flow async_step_check")
 
-        if entry_info["product_type"] not in SUPPORTED_DEVICES:
-            Logger.warning(
-                "Device (%s) not supported by integration" % entry_info["product_type"]
-            )
-            # return self.async_abort(reason="device_not_supported")
+        # Make connection with device
+        energy_api = aiohwenergy.HomeWizardEnergy(entry_info[CONF_IP_ADDRESS])
 
-        if entry_info["api_enabled"] != "1":
-            Logger.warning("API not enabled, please enable API in app")
+        initialized = False
+        try:
+            with async_timeout.timeout(10):
+                await energy_api.initialize()
+                if energy_api.device is not None:
+                    initialized = True
+
+        except aiohwenergy.DisabledError:
+            _LOGGER.error("API disabled, API must be enabled in the app")
             return self.async_abort(reason="api_not_enabled")
 
-        Logger.debug(f"entry_info: {entry_info}")
+        except Exception:  # pylint: disable=broad-except
+            _LOGGER.error(
+                "Error connecting with Energy Device at %s",
+                entry_info[CONF_IP_ADDRESS],
+            )
+            return self.async_abort(reason="unknown_error")
 
-        if (
-            ("host" not in entry_info)
-            or ("port" not in entry_info)
-            or ("serial" not in entry_info)
-            or ("product_name" not in entry_info)
-            or ("product_type" not in entry_info)
-            or ("path" not in entry_info)
-            or ("api_enabled" not in entry_info)
-        ):
-            Logger.warning(f"Invalid discovery parameters")
-            return self.async_abort(reason="invalid_discovery_parameters")
+        finally:
+            await energy_api.close()
 
-        self.context["host"] = entry_info["host"]
-        self.context["unique_id"] = "%s_%s" % (
-            entry_info["product_type"],
-            entry_info["serial"],
-        )
-        self.context["serial"] = entry_info["serial"]
-        self.context["port"] = entry_info["port"]
-        self.context["path"] = entry_info["path"]
+        if not initialized:
+            _LOGGER.error("Initialization failed")
+            return self.async_abort(reason="unknown_error")
+
+        # Validate metadata
+        if energy_api.device.api_version != "v1":
+            return self.async_abort(reason="unsupported_api_version")
+
+        if energy_api.device.product_type not in SUPPORTED_DEVICES:
+            _LOGGER.error(
+                "Device (%s) not supported by integration",
+                energy_api.device.product_type,
+            )
+            return self.async_abort(reason="device_not_supported")
+
+        # Configure device
+        entry_info["product_name"] = energy_api.device.product_name
+        entry_info["product_type"] = energy_api.device.product_type
+        entry_info["serial"] = energy_api.device.serial
+
+        self.context[CONF_HOST] = entry_info[CONF_IP_ADDRESS]
+        self.context[CONF_PORT] = entry_info[CONF_PORT]
         self.context["product_name"] = entry_info["product_name"]
         self.context["product_type"] = entry_info["product_type"]
-        self.context["api_enabled"] = entry_info["api_enabled"]
-
-        self.context["name"] = "%s (%s)" % (
-            self.context["product_name"],
-            self.context["serial"][-6:],
-        )
+        self.context["serial"] = entry_info["serial"]
+        self.context[
+            "unique_id"
+        ] = f"{entry_info['product_type']}_{entry_info['serial']}"
+        self.context[
+            "name"
+        ] = f"{self.context['product_name']} ({self.context['serial'][-6:]})"
 
         await self.async_set_unique_id(self.context["unique_id"])
         self._abort_if_unique_id_configured(updates=entry_info)
@@ -184,51 +152,36 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             "unique_id": self.context["unique_id"],
         }
 
-        # TODO Check if device is already configured (but maybe moved to new IP)
+        return await self.async_step_confirm()
 
-        return await self.async_step_discovery_confirm()
+    async def async_step_confirm(self, user_input=None):
+        """Handle user-confirmation of node."""
 
-    async def async_step_discovery_confirm(self, user_input=None):
-        """Handle user-confirmation of discovered node."""
-
-        Logger.debug("config_flow async_step_discovery_confirm")
-
-        errors = {}
-
-        schema = Schema(
-            {
-                Required("name", default=self.context["product_name"]): All(
-                    str, Length(min=1)
-                )
-            }
-        )
+        _LOGGER.debug("config_flow async_step_confirm")
 
         if user_input is None:
             return self.async_show_form(
-                step_id="discovery_confirm",
+                step_id="confirm",
                 description_placeholders={"name": self.context["product_name"]},
-                data_schema=schema,
-                errors=errors,
+                data_schema=Schema(
+                    {
+                        Required("name", default=self.context["product_name"]): All(
+                            str, Length(min=1)
+                        )
+                    }
+                ),
+                errors=None,
             )
+
+        # Format name
+        self.context["custom_name"] = user_input["name"]
+        if Lower(self.context["product_name"]) != Lower(user_input["name"]):
+            title = f"{self.context['product_name']} ({self.context['custom_name']})"
         else:
+            title = self.context["custom_name"]
 
-            if self.context["api_enabled"] != "1":
-                Logger.warning("API not enabled")
-                return self.async_abort(reason="api_not_enabled")
-
-            Logger.debug("async_step_discovery_confirm _create_entry")
-            self.context["custom_name"] = (
-                user_input["name"] if user_input["name"] != "" else self.context["name"]
-            )
-            if Lower(self.context["product_name"]) != Lower(user_input["name"]):
-                title = "%s (%s)" % (
-                    self.context["product_name"],
-                    self.context["custom_name"],
-                )
-            else:
-                title = self.context["custom_name"]
-
-            return self.async_create_entry(
-                title=title,
-                data=self.context,
-            )
+        # Finish up
+        return self.async_create_entry(
+            title=title,
+            data=self.context,
+        )

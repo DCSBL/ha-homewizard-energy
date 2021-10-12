@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Final
+from typing import Final
 
-import aiohwenergy
 from homeassistant.components.sensor import (
     STATE_CLASS_MEASUREMENT,
     STATE_CLASS_TOTAL_INCREASING,
@@ -16,7 +15,6 @@ from homeassistant.const import (
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_GAS,
     DEVICE_CLASS_POWER,
-    DEVICE_CLASS_SIGNAL_STRENGTH,
     DEVICE_CLASS_TIMESTAMP,
     ENERGY_KILO_WATT_HOUR,
     PERCENTAGE,
@@ -34,11 +32,11 @@ from .const import (
     ATTR_GAS_TIMESTAMP,
     ATTR_METER_MODEL,
     ATTR_SMR_VERSION,
-    ATTR_TOTAL_GAS_M3,
     ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
     ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
     ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
     ATTR_TOTAL_ENERGY_IMPORT_T2_KWH,
+    ATTR_TOTAL_GAS_M3,
     ATTR_WIFI_SSID,
     ATTR_WIFI_STRENGTH,
     CONF_API,
@@ -49,7 +47,7 @@ from .const import (
     DOMAIN,
 )
 
-Logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
@@ -72,37 +70,32 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
         name="Wifi Strength",
         icon="mdi:wifi",
         native_unit_of_measurement=PERCENTAGE,
-        device_class=DEVICE_CLASS_SIGNAL_STRENGTH,
         state_class=STATE_CLASS_MEASUREMENT,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_ENERGY_IMPORT_T1_KWH,
-        name="Total Energy Import T1",
-        icon="mdi:home-import-outline",
+        name="Total Power Import T1",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_ENERGY_IMPORT_T2_KWH,
-        name="Total Energy Import T2",
-        icon="mdi:home-import-outline",
+        name="Total Power Import T2",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_ENERGY_EXPORT_T1_KWH,
-        name="Total Energy Export T1",
-        icon="mdi:home-export-outline",
+        name="Total Power Export T1",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     ),
     SensorEntityDescription(
         key=ATTR_TOTAL_ENERGY_EXPORT_T2_KWH,
-        name="Total Energy Export T2",
-        icon="mdi:home-export-outline",
+        name="Total Power Export T2",
         native_unit_of_measurement=ENERGY_KILO_WATT_HOUR,
         device_class=DEVICE_CLASS_ENERGY,
         state_class=STATE_CLASS_TOTAL_INCREASING,
@@ -110,7 +103,6 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_W,
         name="Active Power",
-        icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=STATE_CLASS_MEASUREMENT,
@@ -118,7 +110,6 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_L1_W,
         name="Active Power L1",
-        icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=STATE_CLASS_MEASUREMENT,
@@ -126,7 +117,6 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_L2_W,
         name="Active Power L2",
-        icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=STATE_CLASS_MEASUREMENT,
@@ -134,7 +124,6 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_ACTIVE_POWER_L3_W,
         name="Active Power L3",
-        icon="mdi:transmission-tower",
         native_unit_of_measurement=POWER_WATT,
         device_class=DEVICE_CLASS_POWER,
         state_class=STATE_CLASS_MEASUREMENT,
@@ -142,7 +131,6 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_TOTAL_GAS_M3,
         name="Total Gas",
-        icon="mdi:fire",
         native_unit_of_measurement=VOLUME_CUBIC_METERS,
         device_class=DEVICE_CLASS_GAS,
         state_class=STATE_CLASS_TOTAL_INCREASING,
@@ -150,7 +138,6 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
     SensorEntityDescription(
         key=ATTR_GAS_TIMESTAMP,
         name="Gas Timestamp",
-        icon="mdi:timeline-clock",
         device_class=DEVICE_CLASS_TIMESTAMP,
     ),
 )
@@ -158,15 +145,10 @@ SENSORS: Final[tuple[SensorEntityDescription, ...]] = (
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Config entry example."""
-    Logger.info("Setting up sensor for HomeWizard Energy.")
-
     energy_api = hass.data[DOMAIN][entry.data["unique_id"]][CONF_API]
     coordinator = hass.data[DOMAIN][entry.data["unique_id"]][COORDINATOR]
 
-    # Fetch initial data so we have data when entities subscribe
-    await coordinator.async_refresh()
-
-    if energy_api.data != None:
+    if energy_api.data is not None:
         entities = []
         for description in SENSORS:
             if description.key in energy_api.data.available_datapoints:
@@ -174,19 +156,18 @@ async def async_setup_entry(hass, entry, async_add_entities):
         async_add_entities(entities, update_before_add=True)
 
         return True
-    else:
-        return False
+
+    return False
 
 
 class HWEnergySensor(CoordinatorEntity, SensorEntity):
-    """Representation of a HomeWizard Energy Sensor"""
+    """Representation of a HomeWizard Energy Sensor."""
 
-    name = None
-    entry_data = None
     unique_id = None
+    name = None
 
     def __init__(self, coordinator, entry_data, description):
-        """Initializes the sensor."""
+        """Initialize Sensor Domain."""
 
         super().__init__(coordinator)
         self.entity_description = description
@@ -194,9 +175,9 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         self.entry_data = entry_data
 
         # Config attributes.
-        self.name = "%s %s" % (entry_data["custom_name"], description.name)
+        self.name = "{} {}".format(entry_data["custom_name"], description.name)
         self.data_type = description.key
-        self.unique_id = "%s_%s" % (entry_data["unique_id"], description.key)
+        self.unique_id = "{}_{}".format(entry_data["unique_id"], description.key)
 
         # Some values are given, but set to NULL (eg. gas_timestamp when no gas meter is connected)
         if self.data[CONF_DATA][self.data_type] is None:
@@ -213,6 +194,7 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
 
     @property
     def device_info(self) -> DeviceInfo:
+        """Return device information."""
         return {
             "name": self.entry_data["custom_name"],
             "manufacturer": "HomeWizard",
@@ -222,8 +204,8 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
         }
 
     @property
-    def data(self) -> dict[str:Any]:
-        """Return data from DataUpdateCoordinator"""
+    def data(self):
+        """Return data object from DataUpdateCoordinator."""
         return self.coordinator.data
 
     @property
@@ -233,21 +215,10 @@ class HWEnergySensor(CoordinatorEntity, SensorEntity):
 
     @property
     def state(self):
-        """Returns state of meter."""
+        """Return state of meter."""
         return self.data[CONF_DATA][self.data_type]
 
     @property
     def available(self):
-        """Returns state of meter."""
+        """Return availability of meter."""
         return self.data_type in self.data[CONF_DATA]
-
-
-async def async_get_aiohwenergy_from_entry_data(entry_data):
-    """Create a HomewizardEnergy object from entry data."""
-
-    Logger.debug(
-        "%s async_get_aiohwenergy_from_entry_data\nentry_data:\n%s"
-        % (__name__, str(entry_data))
-    )
-
-    return aiohwenergy.HomeWizardEnergy(entry_data["host"])
