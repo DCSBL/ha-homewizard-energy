@@ -11,9 +11,10 @@ Custom integration for the [HomeWizard Energy Products](https://www.homewizard.n
 
 ## Requirements
 * This integration works with:
-  * [HomeWizard wifi P1 meter](https://www.homewizard.nl/shop/homewizard-wi-fi-p1-meter)
-  * [HomeWizard wifi kWh meter single phase](https://www.homewizard.nl/shop/homewizard-wi-fi-kwh-meter)
-  * [HomeWizard wifi kWh meter 3-phase](https://www.homewizard.nl/shop/homewizard-wifi-3-fase-din-rail-kwh-meter)
+  * [HomeWizard wifi P1 meter](https://www.homewizard.nl/p1-meter)
+  * [HomeWizard wifi kWh meter single phase](https://www.homewizard.nl/kwh-meter)
+  * [HomeWizard wifi kWh meter 3-phase](https://www.homewizard.nl/kwh-meter)
+  * [HomeWizard wifi Energy Socket](https://www.homewizard.nl/energy-socket)
 * Make sure the HomeWizard Energy device has been connected to the same network.
 
 ## Installation
