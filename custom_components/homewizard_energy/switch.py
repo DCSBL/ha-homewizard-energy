@@ -3,9 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-import aiohwenergy
 import logging
-import homeassistant.helpers.device_registry as dr
 from homeassistant.components.switch import (
     DEVICE_CLASS_OUTLET,
     DEVICE_CLASS_SWITCH,
@@ -14,12 +12,11 @@ from homeassistant.components.switch import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ID, CONF_STATE
-from homeassistant.core import DOMAIN, HomeAssistant
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
-    DataUpdateCoordinator,
 )
 
 from .const import (
@@ -40,12 +37,11 @@ SWITCHES: Final[tuple[SwitchEntityDescription, ...]] = (
     ),
     SwitchEntityDescription(
         key=ATTR_SWITCHLOCK,
-        name="Switch lock",
+        name="Switch Lock",
         device_class=DEVICE_CLASS_SWITCH,
         icon="mdi:lock",
     ),
 )
-
 
 
 async def async_setup_entry(
@@ -58,7 +54,7 @@ async def async_setup_entry(
     energy_api = hass.data[DOMAIN][entry.data["unique_id"]][CONF_API]
     coordinator = hass.data[DOMAIN][entry.data["unique_id"]][COORDINATOR]
 
-    if energy_api.state != None:
+    if energy_api.state is not None:
         entities = []
         for description in SWITCHES:
             entities.append(
@@ -69,7 +65,7 @@ async def async_setup_entry(
 
 
 class HWEnergySwitch(CoordinatorEntity, SwitchEntity):
-    """Representation of a HomeWizard Energy Switch"""
+    """Representation of a HomeWizard Energy Switch."""
 
     unique_id = None
     name = None
