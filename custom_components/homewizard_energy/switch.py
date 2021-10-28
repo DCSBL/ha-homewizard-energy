@@ -11,7 +11,7 @@ from homeassistant.components.switch import (
     SwitchEntityDescription,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_ID, CONF_STATE
+from homeassistant.const import CONF_ID, CONF_STATE, ENTITY_CATEGORY_CONFIG
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -40,6 +40,7 @@ SWITCHES: Final[tuple[SwitchEntityDescription, ...]] = (
         name="Switch Lock",
         device_class=DEVICE_CLASS_SWITCH,
         icon="mdi:lock",
+        entity_category=ENTITY_CATEGORY_CONFIG,
     ),
 )
 
