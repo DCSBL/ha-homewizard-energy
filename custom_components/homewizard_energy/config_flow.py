@@ -11,6 +11,7 @@ from voluptuous import All, Length, Required, Schema
 from voluptuous.util import Lower
 
 from homeassistant import config_entries
+from homeassistant.components import zeroconf
 from homeassistant.const import CONF_HOST, CONF_IP_ADDRESS, CONF_PORT
 from homeassistant.data_entry_flow import FlowResult
 
