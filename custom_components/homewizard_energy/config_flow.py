@@ -11,6 +11,7 @@ from voluptuous import All, Length, Required, Schema
 from voluptuous.util import Lower
 
 from homeassistant import config_entries
+from homeassistant.components import zeroconf
 from homeassistant.const import CONF_HOST, CONF_IP_ADDRESS, CONF_PORT
 from homeassistant.data_entry_flow import FlowResult
 
@@ -53,32 +54,33 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return await self.async_step_check(entry_info)
 
-    async def async_step_zeroconf(self, discovery_info):
+    async def async_step_zeroconf(
+        self, discovery_info: zeroconf.ZeroconfServiceInfo
+    ) -> FlowResult:
         """Handle zeroconf discovery."""
 
         _LOGGER.debug("config_flow async_step_zeroconf")
 
         # Validate doscovery entry
         if (
-            "host" not in discovery_info
-            or "api_enabled" not in discovery_info["properties"]
-            or "path" not in discovery_info["properties"]
-            or "product_name" not in discovery_info["properties"]
-            or "product_type" not in discovery_info["properties"]
-            or "serial" not in discovery_info["properties"]
+            "api_enabled" not in discovery_info.properties
+            or "path" not in discovery_info.properties
+            or "product_name" not in discovery_info.properties
+            or "product_type" not in discovery_info.properties
+            or "serial" not in discovery_info.properties
         ):
             return self.async_abort(reason="invalid_discovery_parameters")
 
-        if (discovery_info["properties"]["path"]) != "/api/v1":
+        if (discovery_info.properties["path"]) != "/api/v1":
             return self.async_abort(reason="unsupported_api_version")
 
-        if (discovery_info["properties"]["api_enabled"]) != "1":
+        if (discovery_info.properties["api_enabled"]) != "1":
             return self.async_abort(reason="api_not_enabled")
 
         # Pass parameters
         entry_info = {
-            CONF_IP_ADDRESS: discovery_info["host"],
-            CONF_PORT: discovery_info["port"],
+            CONF_IP_ADDRESS: discovery_info.host,
+            CONF_PORT: discovery_info.port,
         }
 
         return await self.async_step_check(entry_info)
