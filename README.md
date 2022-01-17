@@ -7,7 +7,7 @@
 # HomeWizard Energy Integration
 Custom integration for the [HomeWizard Energy Products](https://www.homewizard.nl/energie).
 
-![HomeWizard Energy Logo](https://raw.githubusercontent.com/home-assistant/brands/master/custom_integrations/homewizard_energy/icon.png "HomeWizard Energy")
+![HomeWizard Energy Logo](https://raw.githubusercontent.com/home-assistant/brands/master/core_integrations/homewizard/icon.png "HomeWizard Energy")
 
 ## Requirements
 * This integration works with:
