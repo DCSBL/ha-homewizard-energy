@@ -18,6 +18,16 @@ Give a thumps up or something to [this issue](https://github.com/DCSBL/ha-homewi
 This is the core integration that can't see that you already have the same device configured via this custom integration. You can ignore the discovered device.
 3. **What if I have any problems with the integration?**
 If the issues is with the core integration, you can open an issue [here](https://github.com/home-assistant/core/issues/new?assignees=&labels=&template=bug_report.yml). If you have an issue with the custom integration, you can open an issue [here](https://github.com/DCSBL/ha-homewizard-energy/issues)
+4. **I don't care about the data, I just want to use the core integration**
+
+**Follow these steps:**
+1. Remove the integration from your configuration. This step is important, otherwise you will get errors like `Setup failed for homewizard_energy: Integration not found`
+
+<img width="427" alt="Screenshot 2022-02-03 at 09 25 31" src="https://user-images.githubusercontent.com/74970928/152306994-3eff8d06-d212-4909-9326-c7a34685ad52.png">
+
+2. Remove the integration via HACS or remove the `config/custom_components/homewizard_energy` folder
+3. Restart Home Assistant
+4. Start the normal configuration [Click here](https://my.home-assistant.io/redirect/config_flow_start?domain=homewizard)
 
 ## Still wan't to install the custom integration?
 ### Requirements
