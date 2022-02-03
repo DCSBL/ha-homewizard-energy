@@ -8,6 +8,7 @@ import async_timeout
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import CONF_API, COORDINATOR, DOMAIN, PLATFORMS
 from .coordinator import HWEnergyDeviceUpdateCoordinator as Coordinator
@@ -21,7 +22,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("__init__ async_setup_entry")
 
     # Get api and do a initialization
-    energy_api = aiohwenergy.HomeWizardEnergy(entry.data.get("host"))
+    session = async_get_clientsession(hass)
+    energy_api = aiohwenergy.HomeWizardEnergy(
+        entry.data.get("host"), clientsession=session
+    )
 
     # Validate connection
     initialized = False
