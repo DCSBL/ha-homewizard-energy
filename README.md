@@ -18,7 +18,21 @@ Give a thumps up or something to [this issue](https://github.com/DCSBL/ha-homewi
 This is the core integration that can't see that you already have the same device configured via this custom integration. You can ignore the discovered device.
 3. **What if I have any problems with the integration?**
 If the issues is with the core integration, you can open an issue [here](https://github.com/home-assistant/core/issues/new?assignees=&labels=&template=bug_report.yml). If you have an issue with the custom integration, you can open an issue [here](https://github.com/DCSBL/ha-homewizard-energy/issues)
-4. **I don't care about the data, I just want to use the core integration**
+4. **Where is `gas_timestamp` and `meter_model`?**
+Meter model is renamed to `Smart Meter Model`. Gas timestamp is removed because it is the same as 'last updated total gas'. You can get it back with a template sensor:
+```
+# configuration.yaml
+sensor:
+  - platform: template
+    sensors:
+      p1_meter_gas_timestamp:
+        friendly_name: "Gas Timestamp"
+        device_class: timestamp
+        value_template: "{{ as_timestamp(states.sensor.p1_meter_<serial>_active_power.last_updated) }}"
+```
+Replace `p1_meter_<serial>_total_gas` to use the correct entity id. Now you can use `sensor. p1_meter_gas_timestamp`
+
+5. **I don't care about the data, I just want to use the core integration. How do I migrate?**
 
 **Follow these steps:**
 1. Remove the integration from your configuration. This step is important, otherwise you will get errors like `Setup failed for homewizard_energy: Integration not found`
