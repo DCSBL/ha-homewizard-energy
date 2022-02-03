@@ -1,21 +1,11 @@
 {
-  "domain": "homewizard_energy",
-  "name": "HomeWizard Energy",
-  "version": "0.0.0",
+  "codeowners": ["@DCSBL"],
+  "config_flow": false,
   "documentation": "https://github.com/DCSBL/ha-homewizard-energy",
+  "domain": "homewizard_energy",
+  "iot_class": "local_polling",
   "issue_tracker": "https://github.com/DCSBL/ha-homewizard-energy/issues",
-  "codeowners": [
-    "@DCSBL"
-  ],
-  "dependencies": [
-    "zeroconf"
-  ],
-  "requirements": [
-    "aiohwenergy==0.4.0"
-  ],
-  "zeroconf": [
-    "_hwenergy._tcp.local."
-  ],
-  "config_flow": true,
-  "iot_class": "local_polling"
+  "name": "HomeWizard Energy",
+  "requirements": ["aiohwenergy==0.8.0"],
+  "version": "0.0.0"
 }

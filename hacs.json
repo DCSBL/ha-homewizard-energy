@@ -2,7 +2,7 @@
     "name": "HomeWizard Energy",
     "render_readme": true,
     "domains": ["sensor", "switch"],
-    "homeassistant": "2021.11.0",
+    "homeassistant": "2022.2.1",
     "iot_class": "local_polling",
     "zip_release": true,
     "filename": "homewizard_energy.zip"
