@@ -27,6 +27,6 @@ sensor:
       p1_meter_gas_timestamp:
         friendly_name: "Gas Timestamp"
         device_class: timestamp
-        value_template: "{{ as_timestamp(states.sensor.p1_meter_<serial>_active_power.last_updated) }}"
+        value_template: "{{ states.sensor.p1_meter_<serial>_total_gas.last_updated }}"
 ```
-Replace `p1_meter_<serial>_total_gas` to use the correct entity id. Now you can use `sensor. p1_meter_gas_timestamp`
+Replace `p1_meter_<serial>_total_gas` to use the correct entity id. Now you can use `sensor.p1_meter_gas_timestamp`
