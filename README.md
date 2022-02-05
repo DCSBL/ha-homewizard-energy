@@ -11,8 +11,7 @@ This integration is available in Core. This custom integration won't be maintain
 # Migration
 **This integration is not maintained and will be removed**
 
-From version [0.13.0](https://github.com/DCSBL/ha-homewizard-energy/releases), this custom integration only exists to allow migration of current configurations.
-If you had a pre-0.13.0 version in use and you install this version, it will automaticly migrate to core.
+This custom integration only exists to allow migration of current configurations. If you had a `pre-0.13.0` version in use and you install this version, it will automaticly migrate to core. **Make sure to have Home Assistant 2022.2.2 or later installed.**
 
 ## FAQ
 1. **What if I have any problems with the integration?**
