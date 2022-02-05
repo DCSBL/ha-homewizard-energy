@@ -6,6 +6,7 @@ Custom integration for the [HomeWizard Energy Products](https://www.homewizard.n
 
 ## Integration added to core :tada:
 This integration is available in Core. This custom integration won't be maintained and eventually removed.  Click here to read more and install the core integration: https://home-assistant.io/integrations/homewizard/
+
 <a href="https://my.home-assistant.io/redirect/config_flow_start?domain=homewizard" class="my badge" target="_blank"><img src="https://my.home-assistant.io/badges/config_flow_start.svg"></a>
 
 # Migration
