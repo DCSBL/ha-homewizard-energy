@@ -1,8 +1,6 @@
 
-> ⚠️ **Make a back-up before installing this version. Your configuration will be migrated to Home Assistant Core.**
-
-# HomeWizard Energy Integration
-Custom integration for the [HomeWizard Energy Products](https://www.homewizard.nl/energie).
+# HomeWizard Energy Integration (Archived)
+The old custom integration for the [HomeWizard Energy Products](https://www.homewizard.nl/energie). This repo is archived for references and if you want to run the migration.
 
 ## Integration added to core :tada:
 This integration is available in Core. This custom integration won't be maintained and eventually removed.  Click here to read more and install the core integration: https://home-assistant.io/integrations/homewizard/
@@ -10,8 +8,6 @@ This integration is available in Core. This custom integration won't be maintain
 <a href="https://my.home-assistant.io/redirect/config_flow_start?domain=homewizard" class="my badge" target="_blank"><img src="https://my.home-assistant.io/badges/config_flow_start.svg"></a>
 
 # Migration
-**This integration is not maintained and will be removed**
-
 This custom integration only exists to allow migration of current configurations. If you had a `pre-0.13.0` version in use and you install this version, it will automaticly migrate to core. **Make sure to have Home Assistant 2022.2.2 or later installed.**
 
 ## FAQ
